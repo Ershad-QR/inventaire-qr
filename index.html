@@ -24,7 +24,6 @@
         .field-group { margin-bottom: 14px; }
         .field-group label { display: block; font-size: 14px; font-weight: 600; color: #334155; margin-bottom: 5px; }
         input[type="text"], input[type="password"], textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; }
-        input[disabled] { background: #f1f5f9; color: #475569; font-weight: bold; cursor: not-allowed; }
         .hidden { display: none; }
     </style>
 </head>
@@ -98,10 +97,7 @@
         <div class="card" style="text-align:center; padding:14px;">
             <button class="btn btn-secondary" style="margin-top:0;" onclick="exportExcel()">📊 Télécharger tout l'inventaire en Excel (.CSV)</button>
         </div>
-    </div>
-</div>
-
-<script>
+    </div><script>
     const GITHUB_USER  = "Ershad-QR";
     const GITHUB_REPO  = "inventaire-qr";
     const MOT_DE_PASSE = "Lipsheim";
@@ -192,7 +188,6 @@
     function renderCurrentItem() {
         const item = fullDatabase[qrId];
         const inputNom = document.getElementById("inputNomAppareil");
-        const labelNom = document.getElementById("labelNomAppareil");
 
         if (!item || !item.Nom_Appareil) {
             document.getElementById("deviceTitle").innerText = "Appareil non identifié";
@@ -203,8 +198,6 @@
             document.getElementById("valDate").innerText = "Jamais";
 
             inputNom.value = "";
-            inputNom.disabled = false;
-            labelNom.innerText = "Nom de l'appareil (1re identification) *";
         } else {
             document.getElementById("newDeviceAlert").classList.add("hidden");
             document.getElementById("deviceTitle").innerText = item.Nom_Appareil;
@@ -214,15 +207,12 @@
             document.getElementById("valDate").innerText = item.Date_MAJ || "—";
 
             inputNom.value = item.Nom_Appareil;
-            inputNom.disabled = true;
-            labelNom.innerText = "🔒 Nom de l'appareil (Verrouillé)";
             document.getElementById("inputEmplacement").value = item.Emplacement || "";
         }
     }
 
     async function saveEquipment() {
-        const existingItem = fullDatabase[qrId] || {};
-        const nomAppareil = existingItem.Nom_Appareil ? existingItem.Nom_Appareil : document.getElementById("inputNomAppareil").value.trim();
+        const nomAppareil = document.getElementById("inputNomAppareil").value.trim();
         const emplacement = document.getElementById("inputEmplacement").value.trim();
         const modifiePar  = document.getElementById("inputModifiePar").value.trim();
         const commentaire = document.getElementById("inputCommentaire").value.trim();
@@ -247,11 +237,9 @@
                 fullDatabase = JSON.parse(fromBase64Utf8(checkData.content));
             }
 
-            const finalNom = (fullDatabase[qrId] && fullDatabase[qrId].Nom_Appareil) ? fullDatabase[qrId].Nom_Appareil : nomAppareil;
-
             fullDatabase[qrId] = {
                 QR_ID: qrId,
-                Nom_Appareil: finalNom,
+                Nom_Appareil: nomAppareil,
                 Emplacement: emplacement,
                 Modifie_Par: modifiePar,
                 Commentaire: commentaire,
@@ -317,4 +305,3 @@
 
 </body>
 </html>
-
