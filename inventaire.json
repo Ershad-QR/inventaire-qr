@@ -6,5 +6,13 @@
     "Modifie_Par": "Ershad KHAIRZAD",
     "Commentaire": "",
     "Date_MAJ": "26/10/2026 14:39:14"
+  },
+  "QR00001": {
+    "QR_ID": "QR00001",
+    "Nom_Appareil": "Test nom de l'appareil",
+    "Emplacement": "Githib",
+    "Modifie_Par": "Ershad KHAIRZAD",
+    "Commentaire": "Mis ici pour tester github",
+    "Date_MAJ": "26/10/2026 14:57:17"
   }
 }
