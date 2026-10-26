@@ -1,5 +1,5 @@
-# Solution d'Inventaire Équipements par QR Code — Guide d'utilisation
-Ce projet permet de suivre l'emplacement et l'état de 200 équipements à l'aide de QR codes uniques collés sur les appareils. Les utilisateurs peuvent scanner ces QR codes depuis leur téléphone personnel (sans avoir besoin de se connecter à un compte d'entreprise ou à SharePoint) pour consulter la fiche de l'appareil et mettre à jour ses informations en temps réel.
+# Solution d'Inventaire Appareils par QR Code — Guide d'utilisation
+Ce projet permet de suivre l'emplacement et l'état des appareils à l'aide de QR codes uniques collés. Les utilisateurs peuvent scanner ces QR codes depuis leur téléphone personnel (sans avoir besoin de se connecter à un compte d'entreprise ou à SharePoint) pour consulter la fiche de l'appareil et mettre à jour ses informations en temps réel.
 
 ⚙️ Fonctionnement général
 Scan du QR Code : L'utilisateur scanne l'étiquette avec son téléphone portable.
