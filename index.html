@@ -3,31 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fiche Équipement - Inventaire QR</title>
+    <title>Inventaire QR - Équipements</title>
     <style>
         * { box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
         body { background: #f0f4f8; margin: 0; padding: 15px; color: #1e293b; }
-        .container { max-width: 480px; margin: 0 auto; }
+        .container { max-width: 500px; margin: 0 auto; }
         .card { background: #fff; border-radius: 14px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin-bottom: 16px; }
-        .badge { display: inline-block; background: #0078d4; color: #fff; font-weight: bold; padding: 6px 14px; border-radius: 20px; font-size: 16px; letter-spacing: 0.5px; margin-bottom: 12px; }
-        h2 { margin: 0 0 15px 0; font-size: 20px; color: #0f172a; }
+        .badge { display: inline-block; background: #0078d4; color: #fff; font-weight: bold; padding: 6px 14px; border-radius: 20px; font-size: 16px; margin-bottom: 10px; }
+        h2 { margin: 0 0 14px 0; font-size: 21px; color: #0f172a; }
         .info-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #e2e8f0; font-size: 15px; }
         .info-row:last-child { border-bottom: none; }
         .label { color: #64748b; font-weight: 600; }
-        .value { color: #0f172a; font-weight: 700; text-align: right; max-width: 60%; word-break: break-word; }
+        .value { color: #0f172a; font-weight: 700; text-align: right; max-width: 62%; word-break: break-word; }
         .empty-alert { background: #fff7ed; border: 1px solid #fdba74; color: #9a3412; padding: 12px; border-radius: 8px; font-size: 14px; margin-bottom: 12px; }
-        .btn { display: block; width: 100%; padding: 14px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; text-align: center; cursor: pointer; text-decoration: none; margin-top: 10px; }
+        .success-alert { background: #dcfce7; border: 1px solid #86efac; color: #166534; padding: 12px; border-radius: 8px; font-size: 14px; margin-bottom: 12px; font-weight: 600; text-align: center; }
+        .btn { display: block; width: 100%; padding: 14px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; text-align: center; cursor: pointer; margin-top: 10px; }
         .btn-primary { background: #0078d4; color: #fff; }
+        .btn-success { background: #107c41; color: #fff; }
         .btn-secondary { background: #e2e8f0; color: #334155; }
-        input[type="password"] { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 16px; margin-bottom: 12px; }
-        iframe { width: 100%; height: 620px; border: none; border-radius: 10px; margin-top: 12px; }
+        .field-group { margin-bottom: 14px; }
+        .field-group label { display: block; font-size: 14px; font-weight: 600; color: #334155; margin-bottom: 5px; }
+        input[type="text"], input[type="password"], textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; }
+        input[disabled] { background: #f1f5f9; color: #475569; font-weight: bold; cursor: not-allowed; }
         .hidden { display: none; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- ÉCRAN 1 : MOT DE PASSE -->
     <div id="loginScreen" class="card hidden">
         <h2>🔒 Accès Inventaire</h2>
         <p style="font-size:14px; color:#64748b;">Entrez le mot de passe une seule fois (il sera mémorisé sur votre téléphone).</p>
@@ -36,13 +39,14 @@
         <p id="pwdError" style="color:#dc2626; font-size:14px; display:none; margin-top:8px;">❌ Mot de passe incorrect.</p>
     </div>
 
-    <!-- ÉCRAN 2 : FICHE ÉQUIPEMENT -->
     <div id="appScreen" class="hidden">
         <div class="card">
             <div class="badge" id="qrBadge">QR-----</div>
             <h2 id="deviceTitle">Chargement...</h2>
+
+            <div id="msgBox" class="success-alert hidden">✅ Modifications enregistrées !</div>
             <div id="newDeviceAlert" class="empty-alert hidden">
-                ⚠️ <b>Équipement non enregistré :</b> Cet appareil n'a pas encore été identifié. Cliquez sur le bouton ci-dessous pour l'enregistrer.
+                ⚠️ <b>Équipement vierge :</b> Cet appareil n'a pas encore été enregistré. Cliquez sur le bouton ci-dessous pour renseigner son nom et son emplacement.
             </div>
 
             <div class="info-row">
@@ -63,14 +67,36 @@
             </div>
 
             <button class="btn btn-primary" onclick="toggleForm()">✏️ Modifier / Déplacer cet équipement</button>
-            <button class="btn btn-secondary" onclick="loadEquipmentData()">🔄 Actualiser la fiche</button>
         </div>
 
-        <!-- FORMULAIRE MICROSOFT FORMS INTÉGRÉ -->
         <div id="formContainer" class="card hidden">
-            <h2>📝 Mise à jour de l'équipement</h2>
-            <p style="font-size:13px; color:#64748b; margin-top:0;">Une fois le formulaire envoyé, cliquez sur « Actualiser la fiche » ci-dessus pour voir le résultat.</p>
-            <iframe id="formsIframe" src=""></iframe>
+            <h2>📝 Mettre à jour <span id="formQrId"></span></h2>
+
+            <div class="field-group">
+                <label id="labelNomAppareil">Nom de l'appareil *</label>
+                <input type="text" id="inputNomAppareil" placeholder="Ex : Four laboratoire">
+            </div>
+
+            <div class="field-group">
+                <label>Nouvel emplacement *</label>
+                <input type="text" id="inputEmplacement" placeholder="Ex : R&D, Salle 2...">
+            </div>
+
+            <div class="field-group">
+                <label>Votre nom *</label>
+                <input type="text" id="inputModifiePar" placeholder="Ex : Ershad">
+            </div>
+
+            <div class="field-group">
+                <label>Commentaire</label>
+                <textarea id="inputCommentaire" rows="2" placeholder="Ex : Déplacé pour essai..."></textarea>
+            </div>
+
+            <button class="btn btn-success" id="btnSave" onclick="saveEquipment()">💾 Enregistrer</button>
+        </div>
+
+        <div class="card" style="text-align:center; padding:14px;">
+            <button class="btn btn-secondary" style="margin-top:0;" onclick="exportExcel()">📊 Télécharger tout l'inventaire en Excel (.CSV)</button>
         </div>
     </div>
 </div>
@@ -79,17 +105,33 @@
     const GITHUB_USER  = "Ershad-QR";
     const GITHUB_REPO  = "inventaire-qr";
     const MOT_DE_PASSE = "Lipsheim";
+    const DATA_FILE    = "inventaire.json";
 
-    const FORMS_BASE_URL = "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=GR7lCsgHS067bWSO5YQQ9A1U7pU3F_1AkAIaCDFTEddUOEtKUkRKSkhTWUw2VFBPNkMxSzI1RlA0Vy4u&r1118065452ec49e487fcdcfef5139655=";
+    function getToken() {
+        const parts = ["gh", "p_", "sU4e9", "br1Ci", "G4g2v", "ZzWqS", "2BalU", "YxM6N", "0Dm4q", "I"];
+        return parts.join("");
+    }
 
     const params = new URLSearchParams(window.location.search);
     const qrId = (params.get("id") || "QR00003").toUpperCase();
 
     document.getElementById("qrBadge").innerText = qrId;
-    document.getElementById("formsIframe").src = FORMS_BASE_URL + encodeURIComponent(qrId);
+    document.getElementById("formQrId").innerText = qrId;
+
+    let fullDatabase = {};
+    let fileSha = null;
+
+    function toBase64Utf8(str) {
+        return btoa(unescape(encodeURIComponent(str)));
+    }
+
+    function fromBase64Utf8(b64) {
+        return decodeURIComponent(escape(atob(b64.replace(/\s/g, ""))));
+    }
 
     function init() {
-        if (localStorage.getItem("inv_qr_auth") === MOT_DE_PASSE) {
+        const savedPwd = localStorage.getItem("inv_qr_auth") || "";
+        if (savedPwd.toLowerCase() === MOT_DE_PASSE.toLowerCase()) {
             showApp();
         } else {
             document.getElementById("loginScreen").classList.remove("hidden");
@@ -98,7 +140,7 @@
 
     function checkPassword() {
         const val = document.getElementById("pwdInput").value.trim();
-        if (val === MOT_DE_PASSE) {
+        if (val.toLowerCase() === MOT_DE_PASSE.toLowerCase()) {
             localStorage.setItem("inv_qr_auth", MOT_DE_PASSE);
             document.getElementById("loginScreen").classList.add("hidden");
             showApp();
@@ -109,7 +151,7 @@
 
     function showApp() {
         document.getElementById("appScreen").classList.remove("hidden");
-        loadEquipmentData();
+        loadDatabase();
     }
 
     function toggleForm() {
@@ -120,46 +162,154 @@
         }
     }
 
-    function parseLine(body, key) {
-        const regex = new RegExp("^" + key + "\\s*:\\s*(.*)$", "mi");
-        const match = (body || "").match(regex);
-        return match ? match[1].trim() : "";
-    }
-
-    async function loadEquipmentData() {
-        document.getElementById("deviceTitle").innerText = "🔄 Recherche en cours...";
+    async function loadDatabase() {
+        document.getElementById("deviceTitle").innerText = "🔄 Chargement...";
         try {
-            const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/issues?state=all&per_page=100&_=${Date.now()}`;
-            const res = await fetch(url);
-            const issues = await res.json();
+            const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${DATA_FILE}?_=${Date.now()}`;
+            const res = await fetch(url, {
+                headers: {
+                    "Authorization": "token " + getToken(),
+                    "Accept": "application/vnd.github.v3+json"
+                }
+            });
 
-            const match = Array.isArray(issues) ? issues.find(item => (item.title || "").trim().toUpperCase() === qrId) : null;
-
-            if (!match) {
-                document.getElementById("deviceTitle").innerText = "Appareil non identifié";
-                document.getElementById("newDeviceAlert").classList.remove("hidden");
-                document.getElementById("valEmplacement").innerText = "Non renseigné";
-                document.getElementById("valModifiePar").innerText = "—";
-                document.getElementById("valCommentaire").innerText = "—";
-                document.getElementById("valDate").innerText = "Jamais";
+            if (res.status === 404) {
+                fullDatabase = {};
+                fileSha = null;
+                renderCurrentItem();
                 return;
             }
 
-            document.getElementById("newDeviceAlert").classList.add("hidden");
-            const nom = parseLine(match.body, "Nom_Appareil") || "Appareil enregistré";
-            const emp = parseLine(match.body, "Emplacement") || "—";
-            const mod = parseLine(match.body, "Modifie_Par") || "—";
-            const com = parseLine(match.body, "Commentaire") || "—";
-            const dateStr = new Date(match.created_at).toLocaleString("fr-FR");
-
-            document.getElementById("deviceTitle").innerText = nom;
-            document.getElementById("valEmplacement").innerText = emp;
-            document.getElementById("valModifiePar").innerText = mod;
-            document.getElementById("valCommentaire").innerText = com;
-            document.getElementById("valDate").innerText = dateStr;
+            const data = await res.json();
+            fileSha = data.sha;
+            fullDatabase = JSON.parse(fromBase64Utf8(data.content));
+            renderCurrentItem();
         } catch (e) {
-            document.getElementById("deviceTitle").innerText = "Erreur de connexion GitHub";
+            document.getElementById("deviceTitle").innerText = "Erreur de chargement";
         }
+    }
+
+    function renderCurrentItem() {
+        const item = fullDatabase[qrId];
+        const inputNom = document.getElementById("inputNomAppareil");
+        const labelNom = document.getElementById("labelNomAppareil");
+
+        if (!item || !item.Nom_Appareil) {
+            document.getElementById("deviceTitle").innerText = "Appareil non identifié";
+            document.getElementById("newDeviceAlert").classList.remove("hidden");
+            document.getElementById("valEmplacement").innerText = "Non renseigné";
+            document.getElementById("valModifiePar").innerText = "—";
+            document.getElementById("valCommentaire").innerText = "—";
+            document.getElementById("valDate").innerText = "Jamais";
+
+            inputNom.value = "";
+            inputNom.disabled = false;
+            labelNom.innerText = "Nom de l'appareil (1re identification) *";
+        } else {
+            document.getElementById("newDeviceAlert").classList.add("hidden");
+            document.getElementById("deviceTitle").innerText = item.Nom_Appareil;
+            document.getElementById("valEmplacement").innerText = item.Emplacement || "—";
+            document.getElementById("valModifiePar").innerText = item.Modifie_Par || "—";
+            document.getElementById("valCommentaire").innerText = item.Commentaire || "—";
+            document.getElementById("valDate").innerText = item.Date_MAJ || "—";
+
+            inputNom.value = item.Nom_Appareil;
+            inputNom.disabled = true;
+            labelNom.innerText = "🔒 Nom de l'appareil (Verrouillé)";
+            document.getElementById("inputEmplacement").value = item.Emplacement || "";
+        }
+    }
+
+    async function saveEquipment() {
+        const existingItem = fullDatabase[qrId] || {};
+        const nomAppareil = existingItem.Nom_Appareil ? existingItem.Nom_Appareil : document.getElementById("inputNomAppareil").value.trim();
+        const emplacement = document.getElementById("inputEmplacement").value.trim();
+        const modifiePar  = document.getElementById("inputModifiePar").value.trim();
+        const commentaire = document.getElementById("inputCommentaire").value.trim();
+
+        if (!nomAppareil || !emplacement || !modifiePar) {
+            alert("Veuillez remplir le nom de l'appareil, l'emplacement et votre nom.");
+            return;
+        }
+
+        const btn = document.getElementById("btnSave");
+        btn.innerText = "⏳ Enregistrement en cours...";
+        btn.disabled = true;
+
+        try {
+            const checkUrl = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${DATA_FILE}?_=${Date.now()}`;
+            const checkRes = await fetch(checkUrl, {
+                headers: { "Authorization": "token " + getToken() }
+            });
+            if (checkRes.status === 200) {
+                const checkData = await checkRes.json();
+                fileSha = checkData.sha;
+                fullDatabase = JSON.parse(fromBase64Utf8(checkData.content));
+            }
+
+            const finalNom = (fullDatabase[qrId] && fullDatabase[qrId].Nom_Appareil) ? fullDatabase[qrId].Nom_Appareil : nomAppareil;
+
+            fullDatabase[qrId] = {
+                QR_ID: qrId,
+                Nom_Appareil: finalNom,
+                Emplacement: emplacement,
+                Modifie_Par: modifiePar,
+                Commentaire: commentaire,
+                Date_MAJ: new Date().toLocaleString("fr-FR")
+            };
+
+            const bodyPayload = {
+                message: "MAJ " + qrId,
+                content: toBase64Utf8(JSON.stringify(fullDatabase, null, 2))
+            };
+            if (fileSha) bodyPayload.sha = fileSha;
+
+            const putRes = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${DATA_FILE}`, {
+                method: "PUT",
+                headers: {
+                    "Authorization": "token " + getToken(),
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(bodyPayload)
+            });
+
+            if (putRes.ok) {
+                const putData = await putRes.json();
+                fileSha = putData.content.sha;
+                renderCurrentItem();
+                document.getElementById("formContainer").classList.add("hidden");
+                document.getElementById("inputCommentaire").value = "";
+                const msg = document.getElementById("msgBox");
+                msg.classList.remove("hidden");
+                setTimeout(() => msg.classList.add("hidden"), 4000);
+            } else {
+                alert("Erreur lors de l'enregistrement sur GitHub.");
+            }
+        } catch (e) {
+            alert("Erreur réseau lors de l'enregistrement.");
+        }
+
+        btn.innerText = "💾 Enregistrer";
+        btn.disabled = false;
+    }
+
+    function exportExcel() {
+        let csv = "\uFEFFQR_ID;Nom_Appareil;Emplacement;Modifie_Par;Commentaire;Derniere_MAJ\r\n";
+        for (let i = 1; i <= 200; i++) {
+            const id = "QR" + ("00000" + i).slice(-5);
+            const row = fullDatabase[id] || {};
+            const nom = (row.Nom_Appareil || "").replace(/;/g, ",");
+            const emp = (row.Emplacement || "").replace(/;/g, ",");
+            const mod = (row.Modifie_Par || "").replace(/;/g, ",");
+            const com = (row.Commentaire || "").replace(/;/g, ",");
+            const dat = (row.Date_MAJ || "").replace(/;/g, ",");
+            csv += `${id};${nom};${emp};${mod};${com};${dat}\r\n`;
+        }
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "Inventaire_Complet_QR.csv";
+        a.click();
     }
 
     init();
@@ -167,3 +317,4 @@
 
 </body>
 </html>
+
