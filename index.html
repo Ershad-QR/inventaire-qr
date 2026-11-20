@@ -7,101 +7,202 @@
     <style>
         * { box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
         body { background: #f0f4f8; margin: 0; padding: 15px; color: #1e293b; }
-        .container { max-width: 500px; margin: 0 auto; }
+        .container { max-width: 960px; margin: 0 auto; }
+        .narrow-container { max-width: 500px; margin: 0 auto; }
         .card { background: #fff; border-radius: 14px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin-bottom: 16px; }
-        .badge { display: inline-block; background: #0078d4; color: #fff; font-weight: bold; padding: 6px 14px; border-radius: 20px; font-size: 16px; margin-bottom: 10px; }
-        h2 { margin: 0 0 14px 0; font-size: 21px; color: #0f172a; }
+        .badge { display: inline-block; background: #0078d4; color: #fff; font-weight: bold; padding: 6px 14px; border-radius: 20px; font-size: 15px; margin-bottom: 10px; }
+        h1 { margin: 0 0 8px 0; font-size: 24px; color: #0f172a; text-align: center; }
+        h2 { margin: 0 0 14px 0; font-size: 20px; color: #0f172a; }
+
+        /* Navigation principale */
+        .nav-bar { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-bottom: 18px; }
+        .nav-btn { flex: 1; min-width: 220px; padding: 14px 18px; border: 2px solid #0078d4; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; background: #fff; color: #0078d4; transition: all 0.2s; }
+        .nav-btn.active, .nav-btn:hover { background: #0078d4; color: #fff; }
+
+        /* Détails fiche appareil */
         .info-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #e2e8f0; font-size: 15px; }
         .info-row:last-child { border-bottom: none; }
         .label { color: #64748b; font-weight: 600; }
         .value { color: #0f172a; font-weight: 700; text-align: right; max-width: 62%; word-break: break-word; }
+
+        /* Alertes */
         .empty-alert { background: #fff7ed; border: 1px solid #fdba74; color: #9a3412; padding: 12px; border-radius: 8px; font-size: 14px; margin-bottom: 12px; }
         .success-alert { background: #dcfce7; border: 1px solid #86efac; color: #166534; padding: 12px; border-radius: 8px; font-size: 14px; margin-bottom: 12px; font-weight: 600; text-align: center; }
+
+        /* Boutons et formulaires */
         .btn { display: block; width: 100%; padding: 14px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; text-align: center; cursor: pointer; margin-top: 10px; }
         .btn-primary { background: #0078d4; color: #fff; }
         .btn-success { background: #107c41; color: #fff; }
         .btn-secondary { background: #e2e8f0; color: #334155; }
         .field-group { margin-bottom: 14px; }
         .field-group label { display: block; font-size: 14px; font-weight: 600; color: #334155; margin-bottom: 5px; }
-        input[type="text"], input[type="password"], textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; }
-        .hidden { display: none; }
+        input[type="text"], input[type="password"], textarea, select { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; }
+
+        /* Grille QR Codes */
+        .toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+        .qr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; }
+        .qr-item { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; text-align: center; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; }
+        .qr-item:hover { transform: translateY(-3px); box-shadow: 0 6px 14px rgba(0,0,0,0.1); border-color: #0078d4; }
+        .qr-item img { width: 135px; height: 135px; margin-bottom: 8px; border-radius: 6px; background: #fff; padding: 6px; border: 1px solid #e2e8f0; }
+        .qr-item-id { font-weight: 800; color: #0078d4; font-size: 15px; margin-bottom: 4px; }
+        .qr-item-name { font-weight: 700; color: #0f172a; font-size: 14px; margin-bottom: 2px; word-break: break-word; }
+        .qr-item-loc { font-size: 13px; color: #64748b; }
+
+        /* Tableau */
+        .table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th, td { padding: 12px 10px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        th { background: #f1f5f9; color: #334155; font-weight: 700; white-space: nowrap; }
+        tr:hover { background: #f8fafc; }
+        .link-id { color: #0078d4; font-weight: bold; text-decoration: none; cursor: pointer; }
+        .link-id:hover { text-decoration: underline; }
+
+        .hidden { display: none !important; }
+
+        @media print {
+            .nav-bar, .toolbar, .no-print { display: none !important; }
+            .card { box-shadow: none; border: none; padding: 0; }
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div id="loginScreen" class="card hidden">
+    <!-- ÉCRAN DE CONNEXION -->
+    <div id="loginScreen" class="card narrow-container hidden">
         <h2>🔒 Accès Inventaire</h2>
-        <p style="font-size:14px; color:#64748b;">Entrez le mot de passe une seule fois (il sera mémorisé sur votre téléphone).</p>
+        <p style="font-size:14px; color:#64748b;">Entrez le mot de passe une seule fois (il sera mémorisé sur votre appareil).</p>
         <input type="password" id="pwdInput" placeholder="Mot de passe...">
         <button class="btn btn-primary" onclick="checkPassword()">Déverrouiller</button>
         <p id="pwdError" style="color:#dc2626; font-size:14px; display:none; margin-top:8px;">❌ Mot de passe incorrect.</p>
     </div>
 
+    <!-- APPLICATION PRINCIPALE -->
     <div id="appScreen" class="hidden">
-        <div class="card">
-            <div class="badge" id="qrBadge">QR-----</div>
-            <h2 id="deviceTitle">Chargement...</h2>
-
-            <div id="msgBox" class="success-alert hidden">✅ Modifications enregistrées !</div>
-            <div id="newDeviceAlert" class="empty-alert hidden">
-                ⚠️ <b>Équipement vierge :</b> Cet appareil n'a pas encore été enregistré. Cliquez sur le bouton ci-dessous pour renseigner son nom et son emplacement.
+        
+        <div class="card no-print" style="padding: 16px;">
+            <h1>📦 Suivi & Inventaire des Appareils</h1>
+            <p id="loadingStatus" style="text-align:center; color:#64748b; font-size:14px; margin:4px 0 14px 0;">Chargement des données...</p>
+            
+            <!-- LES DEUX BOUTONS PRINCIPAUX -->
+            <div class="nav-bar">
+                <button id="btnTabQr" class="nav-btn" onclick="switchView('qrGrid')">
+                    🔳 Afficher tous les QR Codes
+                </button>
+                <button id="btnTabTable" class="nav-btn" onclick="switchView('tableList')">
+                    📋 Liste détaillée & Export Excel
+                </button>
             </div>
-
-            <div class="info-row">
-                <span class="label">📍 Emplacement</span>
-                <span class="value" id="valEmplacement">—</span>
-            </div>
-            <div class="info-row">
-                <span class="label">👤 Modifié par</span>
-                <span class="value" id="valModifiePar">—</span>
-            </div>
-            <div class="info-row">
-                <span class="label">💬 Commentaire</span>
-                <span class="value" id="valCommentaire">—</span>
-            </div>
-            <div class="info-row">
-                <span class="label">🕒 Dernière MAJ</span>
-                <span class="value" id="valDate">—</span>
-            </div>
-
-            <button class="btn btn-primary" onclick="toggleForm()">✏️ Modifier / Déplacer cet appareil</button>
         </div>
 
-        <div id="formContainer" class="card hidden">
-            <h2>📝 Mettre à jour <span id="formQrId"></span></h2>
-
-            <div class="field-group">
-                <label id="labelNomAppareil">Nom de l'appareil *</label>
-                <input type="text" id="inputNomAppareil" placeholder="Ex : Four laboratoire">
+        <!-- VUE 1 : GRILLE DE TOUS LES QR CODES -->
+        <div id="viewQrGrid" class="card hidden">
+            <div class="toolbar">
+                <h2 style="margin:0;">🔳 Galerie des QR Codes</h2>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <select id="qrFilterSelect" onchange="renderQrGrid()" style="width:auto; padding:8px 12px;">
+                        <option value="registered">Appareils enregistrés uniquement</option>
+                        <option value="all200">Tous les QR Codes (QR00001 à QR00200)</option>
+                    </select>
+                    <button class="btn btn-secondary" style="width:auto; margin:0; padding:8px 14px;" onclick="window.print()">🖨️ Imprimer</button>
+                </div>
             </div>
-
-            <div class="field-group">
-                <label>Nouvel emplacement *</label>
-                <input type="text" id="inputEmplacement" placeholder="Ex : R&D, Salle 2...">
-            </div>
-
-            <div class="field-group">
-                <label>Votre nom *</label>
-                <input type="text" id="inputModifiePar" placeholder="Ex : Ershad">
-            </div>
-
-            <div class="field-group">
-                <label>Commentaire</label>
-                <textarea id="inputCommentaire" rows="2" placeholder="Ex : Déplacé pour essai..."></textarea>
-            </div>
-
-            <button class="btn btn-success" id="btnSave" onclick="saveEquipment()">💾 Enregistrer</button>
+            <div id="qrGridContainer" class="qr-grid"></div>
         </div>
 
-        <div class="card" style="text-align:center; padding:14px;">
-            <button class="btn btn-secondary" style="margin-top:0;" onclick="exportExcel()">📊 Télécharger tout l'inventaire en Excel (.CSV)</button>
+        <!-- VUE 2 : LISTE EN TABLEAU + EXPORT EXCEL -->
+        <div id="viewTableList" class="card hidden">
+            <div class="toolbar">
+                <h2 style="margin:0;">📋 Liste complète des appareils</h2>
+                <button class="btn btn-success" style="width:auto; margin:0; padding:10px 16px;" onclick="exportExcel()">
+                    📊 Télécharger en Excel (.CSV)
+                </button>
+            </div>
+
+            <div class="field-group">
+                <input type="text" id="searchInput" placeholder="🔍 Rechercher un code QR, un appareil, un emplacement ou une personne..." oninput="renderTable()">
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Code QR</th>
+                            <th>Nom de l'appareil</th>
+                            <th>📍 Emplacement</th>
+                            <th>👤 Modifié par</th>
+                            <th>💬 Commentaire</th>
+                            <th>🕒 Dernière MAJ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
         </div>
-    </div><script>
+
+        <!-- VUE 3 : FICHE INDIVIDUELLE D'UN APPAREIL (LORS D'UN SCAN OU D'UN CLIC) -->
+        <div id="viewDeviceDetail" class="narrow-container hidden">
+            <div class="card">
+                <div class="badge" id="qrBadge">QR-----</div>
+                <h2 id="deviceTitle">Chargement...</h2>
+
+                <div id="msgBox" class="success-alert hidden">✅ Modifications enregistrées !</div>
+
+                <div id="newDeviceAlert" class="empty-alert hidden">
+                    ⚠️ <b>Équipement vierge :</b> Cet appareil n'a pas encore été enregistré. Cliquez sur le bouton ci-dessous pour renseigner son nom et son emplacement.
+                </div>
+
+                <div class="info-row">
+                    <span class="label">📍 Emplacement</span>
+                    <span class="value" id="valEmplacement">—</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">👤 Modifié par</span>
+                    <span class="value" id="valModifiePar">—</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">💬 Commentaire</span>
+                    <span class="value" id="valCommentaire">—</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">🕒 Dernière MAJ</span>
+                    <span class="value" id="valDate">—</span>
+                </div>
+
+                <button class="btn btn-primary" onclick="toggleForm()">✏️ Modifier / Déplacer cet appareil</button>
+            </div>
+
+            <div id="formContainer" class="card hidden">
+                <h2>📝 Mettre à jour <span id="formQrId"></span></h2>
+                <div class="field-group">
+                    <label>Nom de l'appareil *</label>
+                    <input type="text" id="inputNomAppareil" placeholder="Ex : Four laboratoire">
+                </div>
+                <div class="field-group">
+                    <label>Nouvel emplacement *</label>
+                    <input type="text" id="inputEmplacement" placeholder="Ex : R&D, Salle 2...">
+                </div>
+                <div class="field-group">
+                    <label>Votre nom *</label>
+                    <input type="text" id="inputModifiePar" placeholder="Ex : Ershad">
+                </div>
+                <div class="field-group">
+                    <label>Commentaire</label>
+                    <textarea id="inputCommentaire" rows="2" placeholder="Ex : Déplacé pour essai..."></textarea>
+                </div>
+                <button class="btn btn-success" id="btnSave" onclick="saveEquipment()">💾 Enregistrer</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
     const GITHUB_USER  = "Ershad-QR";
     const GITHUB_REPO  = "inventaire-qr";
     const MOT_DE_PASSE = "Lipsheim";
     const DATA_FILE    = "inventaire.json";
+    const SITE_BASE_URL = `https://${GITHUB_USER.toLowerCase()}.github.io/${GITHUB_REPO}/`;
 
     function getToken() {
         const parts = ["gh", "p_", "sU4e9", "br1Ci", "G4g2v", "ZzWqS", "2BalU", "YxM6N", "0Dm4q", "I"];
@@ -109,10 +210,7 @@
     }
 
     const params = new URLSearchParams(window.location.search);
-    const qrId = (params.get("id") || "QR00003").toUpperCase();
-
-    document.getElementById("qrBadge").innerText = qrId;
-    document.getElementById("formQrId").innerText = qrId;
+    let currentQrId = params.get("id") ? params.get("id").toUpperCase() : null;
 
     let fullDatabase = {};
     let fileSha = null;
@@ -145,9 +243,47 @@
         }
     }
 
-    function showApp() {
+    async function showApp() {
         document.getElementById("appScreen").classList.remove("hidden");
-        loadDatabase();
+        await loadDatabase();
+
+        // Si un ID est présent dans l'URL (scan d'un QR code), on ouvre la fiche de l'appareil
+        // Sinon, par défaut, on ouvre la vue liste/tableau ou la grille de QR codes
+        if (currentQrId) {
+            openDeviceDetail(currentQrId);
+        } else {
+            switchView('qrGrid');
+        }
+    }
+
+    function switchView(viewName) {
+        document.getElementById("viewQrGrid").classList.add("hidden");
+        document.getElementById("viewTableList").classList.add("hidden");
+        document.getElementById("viewDeviceDetail").classList.add("hidden");
+
+        document.getElementById("btnTabQr").classList.remove("active");
+        document.getElementById("btnTabTable").classList.remove("active");
+
+        if (viewName === 'qrGrid') {
+            document.getElementById("viewQrGrid").classList.remove("hidden");
+            document.getElementById("btnTabQr").classList.add("active");
+            renderQrGrid();
+        } else if (viewName === 'tableList') {
+            document.getElementById("viewTableList").classList.remove("hidden");
+            document.getElementById("btnTabTable").classList.add("active");
+            renderTable();
+        } else if (viewName === 'deviceDetail') {
+            document.getElementById("viewDeviceDetail").classList.remove("hidden");
+        }
+    }
+
+    function openDeviceDetail(qrId) {
+        currentQrId = qrId;
+        document.getElementById("qrBadge").innerText = qrId;
+        document.getElementById("formQrId").innerText = qrId;
+        document.getElementById("formContainer").classList.add("hidden");
+        renderCurrentItem();
+        switchView('deviceDetail');
     }
 
     function toggleForm() {
@@ -159,7 +295,8 @@
     }
 
     async function loadDatabase() {
-        document.getElementById("deviceTitle").innerText = "🔄 Chargement...";
+        const statusEl = document.getElementById("loadingStatus");
+        statusEl.innerText = "🔄 Synchronisation avec GitHub...";
         try {
             const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${DATA_FILE}?_=${Date.now()}`;
             const res = await fetch(url, {
@@ -172,21 +309,92 @@
             if (res.status === 404) {
                 fullDatabase = {};
                 fileSha = null;
-                renderCurrentItem();
+                statusEl.innerText = "Base de données prête (0 appareil)";
                 return;
             }
 
             const data = await res.json();
             fileSha = data.sha;
             fullDatabase = JSON.parse(fromBase64Utf8(data.content));
-            renderCurrentItem();
+            const count = Object.keys(fullDatabase).length;
+            statusEl.innerText = `✅ ${count} appareil(s) enregistré(s) dans l'inventaire`;
         } catch (e) {
-            document.getElementById("deviceTitle").innerText = "Erreur de chargement";
+            statusEl.innerText = "⚠️ Erreur de chargement de la base GitHub";
+        }
+    }
+
+    function renderQrGrid() {
+        const container = document.getElementById("qrGridContainer");
+        const filterMode = document.getElementById("qrFilterSelect").value;
+        container.innerHTML = "";
+
+        let idsToShow = [];
+        if (filterMode === "all200") {
+            for (let i = 1; i <= 200; i++) {
+                idsToShow.push("QR" + ("00000" + i).slice(-5));
+            }
+        } else {
+            idsToShow = Object.keys(fullDatabase).sort();
+        }
+
+        if (idsToShow.length === 0) {
+            container.innerHTML = `<p style="grid-column: 1/-1; text-align:center; color:#64748b;">Aucun appareil enregistré pour le moment.</p>`;
+            return;
+        }
+
+        idsToShow.forEach(id => {
+            const item = fullDatabase[id] || {};
+            const nom = item.Nom_Appareil || "Vierge (Non attribué)";
+            const emp = item.Emplacement ? `📍 ${item.Emplacement}` : "Aucun emplacement";
+            const targetUrl = `${SITE_BASE_URL}?id=${id}`;
+            const qrImgUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(targetUrl)}`;
+
+            const card = document.createElement("div");
+            card.className = "qr-item";
+            card.onclick = () => openDeviceDetail(id);
+            card.innerHTML = `
+                <img src="${qrImgUrl}" alt="${id}" loading="lazy">
+                <div class="qr-item-id">${id}</div>
+                <div class="qr-item-name">${nom}</div>
+                <div class="qr-item-loc">${emp}</div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    function renderTable() {
+        const tbody = document.getElementById("tableBody");
+        const query = (document.getElementById("searchInput").value || "").toLowerCase().trim();
+        tbody.innerHTML = "";
+
+        const keys = Object.keys(fullDatabase).sort();
+        let matchCount = 0;
+
+        keys.forEach(id => {
+            const item = fullDatabase[id];
+            const searchableText = `${id} ${item.Nom_Appareil || ""} ${item.Emplacement || ""} ${item.Modifie_Par || ""} ${item.Commentaire || ""}`.toLowerCase();
+            if (query && !searchableText.includes(query)) return;
+
+            matchCount++;
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td><span class="link-id" onclick="openDeviceDetail('${id}')">${id}</span></td>
+                <td><b>${item.Nom_Appareil || "—"}</b></td>
+                <td>${item.Emplacement || "—"}</td>
+                <td>${item.Modifie_Par || "—"}</td>
+                <td>${item.Commentaire || "—"}</td>
+                <td>${item.Date_MAJ || "—"}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        if (matchCount === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#64748b; padding:20px;">Aucun appareil trouvé.</td></tr>`;
         }
     }
 
     function renderCurrentItem() {
-        const item = fullDatabase[qrId];
+        const item = fullDatabase[currentQrId];
         const inputNom = document.getElementById("inputNomAppareil");
 
         if (!item || !item.Nom_Appareil) {
@@ -196,8 +404,8 @@
             document.getElementById("valModifiePar").innerText = "—";
             document.getElementById("valCommentaire").innerText = "—";
             document.getElementById("valDate").innerText = "Jamais";
-
             inputNom.value = "";
+            document.getElementById("inputEmplacement").value = "";
         } else {
             document.getElementById("newDeviceAlert").classList.add("hidden");
             document.getElementById("deviceTitle").innerText = item.Nom_Appareil;
@@ -205,7 +413,6 @@
             document.getElementById("valModifiePar").innerText = item.Modifie_Par || "—";
             document.getElementById("valCommentaire").innerText = item.Commentaire || "—";
             document.getElementById("valDate").innerText = item.Date_MAJ || "—";
-
             inputNom.value = item.Nom_Appareil;
             document.getElementById("inputEmplacement").value = item.Emplacement || "";
         }
@@ -231,14 +438,15 @@
             const checkRes = await fetch(checkUrl, {
                 headers: { "Authorization": "token " + getToken() }
             });
+
             if (checkRes.status === 200) {
                 const checkData = await checkRes.json();
                 fileSha = checkData.sha;
                 fullDatabase = JSON.parse(fromBase64Utf8(checkData.content));
             }
 
-            fullDatabase[qrId] = {
-                QR_ID: qrId,
+            fullDatabase[currentQrId] = {
+                QR_ID: currentQrId,
                 Nom_Appareil: nomAppareil,
                 Emplacement: emplacement,
                 Modifie_Par: modifiePar,
@@ -247,7 +455,7 @@
             };
 
             const bodyPayload = {
-                message: "MAJ " + qrId,
+                message: "MAJ " + currentQrId,
                 content: toBase64Utf8(JSON.stringify(fullDatabase, null, 2))
             };
             if (fileSha) bodyPayload.sha = fileSha;
@@ -267,6 +475,7 @@
                 renderCurrentItem();
                 document.getElementById("formContainer").classList.add("hidden");
                 document.getElementById("inputCommentaire").value = "";
+                document.getElementById("loadingStatus").innerText = `✅ ${Object.keys(fullDatabase).length} appareil(s) enregistré(s) dans l'inventaire`;
                 const msg = document.getElementById("msgBox");
                 msg.classList.remove("hidden");
                 setTimeout(() => msg.classList.add("hidden"), 4000);
