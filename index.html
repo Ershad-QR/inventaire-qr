@@ -14,22 +14,18 @@
         h1 { margin: 0 0 8px 0; font-size: 24px; color: #0f172a; text-align: center; }
         h2 { margin: 0 0 14px 0; font-size: 20px; color: #0f172a; }
 
-        /* Navigation principale */
         .nav-bar { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-bottom: 18px; }
         .nav-btn { flex: 1; min-width: 220px; padding: 14px 18px; border: 2px solid #0078d4; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; background: #fff; color: #0078d4; transition: all 0.2s; }
         .nav-btn.active, .nav-btn:hover { background: #0078d4; color: #fff; }
 
-        /* Détails fiche appareil */
         .info-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #e2e8f0; font-size: 15px; }
         .info-row:last-child { border-bottom: none; }
         .label { color: #64748b; font-weight: 600; }
         .value { color: #0f172a; font-weight: 700; text-align: right; max-width: 62%; word-break: break-word; }
 
-        /* Alertes */
         .empty-alert { background: #fff7ed; border: 1px solid #fdba74; color: #9a3412; padding: 12px; border-radius: 8px; font-size: 14px; margin-bottom: 12px; }
         .success-alert { background: #dcfce7; border: 1px solid #86efac; color: #166534; padding: 12px; border-radius: 8px; font-size: 14px; margin-bottom: 12px; font-weight: 600; text-align: center; }
 
-        /* Boutons et formulaires */
         .btn { display: block; width: 100%; padding: 14px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; text-align: center; cursor: pointer; margin-top: 10px; }
         .btn-primary { background: #0078d4; color: #fff; }
         .btn-success { background: #107c41; color: #fff; }
@@ -38,7 +34,6 @@
         .field-group label { display: block; font-size: 14px; font-weight: 600; color: #334155; margin-bottom: 5px; }
         input[type="text"], input[type="password"], textarea, select { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; }
 
-        /* Grille QR Codes */
         .toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
         .qr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; }
         .qr-item { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; text-align: center; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; }
@@ -48,7 +43,6 @@
         .qr-item-name { font-weight: 700; color: #0f172a; font-size: 14px; margin-bottom: 2px; word-break: break-word; }
         .qr-item-loc { font-size: 13px; color: #64748b; }
 
-        /* Tableau */
         .table-wrapper { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; font-size: 14px; }
         th, td { padding: 12px 10px; text-align: left; border-bottom: 1px solid #e2e8f0; }
@@ -71,20 +65,41 @@
     <!-- ÉCRAN DE CONNEXION -->
     <div id="loginScreen" class="card narrow-container hidden">
         <h2>🔒 Accès Inventaire</h2>
-        <p style="font-size:14px; color:#64748b;">Entrez le mot de passe une seule fois (il sera mémorisé sur votre appareil).</p>
-        <input type="password" id="pwdInput" placeholder="Mot de passe...">
+        <p style="font-size:14px; color:#64748b;">Entrez le mot de passe d'équipe une seule fois (il sera mémorisé sur votre téléphone).</p>
+        <input type="password" id="pwdInput" placeholder="Mot de passe..." onkeydown="if(event.key==='Enter') checkPassword()">
         <button class="btn btn-primary" onclick="checkPassword()">Déverrouiller</button>
         <p id="pwdError" style="color:#dc2626; font-size:14px; display:none; margin-top:8px;">❌ Mot de passe incorrect.</p>
     </div>
 
+    <!-- OUTIL ADMIN DE CHIFFREMENT (Visible uniquement avec ?setup=1) -->
+    <div id="setupScreen" class="card narrow-container hidden">
+        <h2>🛠️ Configuration de la Sécurité</h2>
+        <p style="font-size:13px; color:#64748b;">Chiffre ta clé GitHub avec le mot de passe de l'entreprise pour que personne ne puisse la lire dans le code.</p>
+        <div class="field-group">
+            <label>1. Colle ta nouvelle clé GitHub (github_pat_...)</label>
+            <input type="password" id="setupToken" placeholder="github_pat_...">
+        </div>
+        <div class="field-group">
+            <label>2. Choisis le mot de passe pour tes collègues (ex: Lipsheim)</label>
+            <input type="text" id="setupPwd" value="Lipsheim">
+        </div>
+        <button class="btn btn-primary" onclick="generateEncryptedPayload()">Générer le code sécurisé</button>
+        <div class="field-group" style="margin-top:14px;">
+            <label>3. Copie tout ce texte et colle-le à la place de <code>COLLE_ICI_TON_CODE_SECURISE</code> dans index.html :</label>
+            <textarea id="setupOutput" rows="3" readonly onclick="this.select()"></textarea>
+        </div>
+    </div>
+
     <!-- APPLICATION PRINCIPALE -->
     <div id="appScreen" class="hidden">
-        
         <div class="card no-print" style="padding: 16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:12px; color:#64748b;">🔒 Accès Entreprise Protégé</span>
+                <button onclick="logout()" style="background:none; border:none; color:#dc2626; cursor:pointer; font-size:13px; font-weight:600;">Verrouiller</button>
+            </div>
             <h1>📦 Suivi & Inventaire des Appareils</h1>
             <p id="loadingStatus" style="text-align:center; color:#64748b; font-size:14px; margin:4px 0 14px 0;">Chargement des données...</p>
             
-            <!-- LES DEUX BOUTONS PRINCIPAUX -->
             <div class="nav-bar">
                 <button id="btnTabQr" class="nav-btn" onclick="switchView('qrGrid')">
                     🔳 Afficher tous les QR Codes
@@ -140,7 +155,7 @@
             </div>
         </div>
 
-        <!-- VUE 3 : FICHE INDIVIDUELLE D'UN APPAREIL (LORS D'UN SCAN OU D'UN CLIC) -->
+        <!-- VUE 3 : FICHE INDIVIDUELLE D'UN APPAREIL -->
         <div id="viewDeviceDetail" class="narrow-container hidden">
             <div class="card">
                 <div class="badge" id="qrBadge">QR-----</div>
@@ -193,39 +208,90 @@
                 <button class="btn btn-success" id="btnSave" onclick="saveEquipment()">💾 Enregistrer</button>
             </div>
         </div>
-
     </div>
 </div>
 
 <script>
-    const GITHUB_USER  = "Ershad-QR";
-    const GITHUB_REPO  = "inventaire-qr";
-    const MOT_DE_PASSE = "Lipsheim";
-    const DATA_FILE    = "inventaire.json";
+    // =========================================================================
+    // ⚙️ CONFIGURATION DE TON COMPTE ERSHAD-QR
+    // =========================================================================
+    const GITHUB_USER     = "Ershad-QR";
+    const GITHUB_REPO     = "inventaire-qr";
+    const DATA_FILE       = "inventaire.json";
+    const ENCRYPTED_TOKEN = "COLLE_ICI_TON_CODE_SECURISE";
+    // =========================================================================
+
     const SITE_BASE_URL = `https://${GITHUB_USER.toLowerCase()}.github.io/${GITHUB_REPO}/`;
-
-    function getToken() {
-        const parts = ["gh", "p_", "sU4e9", "br1Ci", "G4g2v", "ZzWqS", "2BalU", "YxM6N", "0Dm4q", "I"];
-        return parts.join("");
-    }
-
     const params = new URLSearchParams(window.location.search);
     let currentQrId = params.get("id") ? params.get("id").toUpperCase() : null;
 
+    let activeToken = null;
     let fullDatabase = {};
     let fileSha = null;
 
+    function escapeHtml(str) {
+        return String(str || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    function xorCipher(text, pass) {
+        const key = pass.trim().toLowerCase();
+        let out = "";
+        for (let i = 0; i < text.length; i++) {
+            out += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+        }
+        return out;
+    }
+
+    function generateEncryptedPayload() {
+        const t = document.getElementById("setupToken").value.trim();
+        const p = document.getElementById("setupPwd").value.trim();
+        if (!t || !p) { alert("Remplis la clé GitHub et le mot de passe."); return; }
+        const encrypted = btoa(xorCipher("VALID:" + t, p));
+        document.getElementById("setupOutput").value = encrypted;
+    }
+
+    function tryDecryptToken(password) {
+        try {
+            const raw = xorCipher(atob(ENCRYPTED_TOKEN), password);
+            if (raw.startsWith("VALID:")) {
+                return raw.substring(6);
+            }
+        } catch (e) {}
+        return null;
+    }
+
     function toBase64Utf8(str) {
-        return btoa(unescape(encodeURIComponent(str)));
+        const bytes = new TextEncoder().encode(str);
+        let binString = "";
+        bytes.forEach(b => binString += String.fromCharCode(b));
+        return btoa(binString);
     }
 
     function fromBase64Utf8(b64) {
-        return decodeURIComponent(escape(atob(b64.replace(/\s/g, ""))));
+        const binString = atob(b64.replace(/\s/g, ""));
+        const bytes = Uint8Array.from(binString, m => m.charCodeAt(0));
+        return new TextDecoder().decode(bytes);
     }
 
     function init() {
+        if (params.get("setup") === "1") {
+            document.getElementById("setupScreen").classList.remove("hidden");
+            return;
+        }
+
+        const savedUser = localStorage.getItem("inv_qr_username") || "";
+        if (savedUser) document.getElementById("inputModifiePar").value = savedUser;
+
         const savedPwd = localStorage.getItem("inv_qr_auth") || "";
-        if (savedPwd.toLowerCase() === MOT_DE_PASSE.toLowerCase()) {
+        const token = savedPwd ? tryDecryptToken(savedPwd) : null;
+
+        if (token) {
+            activeToken = token;
             showApp();
         } else {
             document.getElementById("loginScreen").classList.remove("hidden");
@@ -234,8 +300,11 @@
 
     function checkPassword() {
         const val = document.getElementById("pwdInput").value.trim();
-        if (val.toLowerCase() === MOT_DE_PASSE.toLowerCase()) {
-            localStorage.setItem("inv_qr_auth", MOT_DE_PASSE);
+        const token = tryDecryptToken(val);
+        if (token) {
+            activeToken = token;
+            localStorage.setItem("inv_qr_auth", val);
+            document.getElementById("pwdError").style.display = "none";
             document.getElementById("loginScreen").classList.add("hidden");
             showApp();
         } else {
@@ -243,12 +312,15 @@
         }
     }
 
+    function logout() {
+        localStorage.removeItem("inv_qr_auth");
+        location.reload();
+    }
+
     async function showApp() {
         document.getElementById("appScreen").classList.remove("hidden");
         await loadDatabase();
 
-        // Si un ID est présent dans l'URL (scan d'un QR code), on ouvre la fiche de l'appareil
-        // Sinon, par défaut, on ouvre la vue liste/tableau ou la grille de QR codes
         if (currentQrId) {
             openDeviceDetail(currentQrId);
         } else {
@@ -296,12 +368,12 @@
 
     async function loadDatabase() {
         const statusEl = document.getElementById("loadingStatus");
-        statusEl.innerText = "🔄 Synchronisation avec GitHub...";
+        statusEl.innerText = "🔄 Synchronisation sécurisée avec GitHub...";
         try {
             const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${DATA_FILE}?_=${Date.now()}`;
             const res = await fetch(url, {
                 headers: {
-                    "Authorization": "token " + getToken(),
+                    "Authorization": "Bearer " + activeToken,
                     "Accept": "application/vnd.github.v3+json"
                 }
             });
@@ -312,6 +384,7 @@
                 statusEl.innerText = "Base de données prête (0 appareil)";
                 return;
             }
+            if (!res.ok) throw new Error("Accès refusé");
 
             const data = await res.json();
             fileSha = data.sha;
@@ -319,7 +392,7 @@
             const count = Object.keys(fullDatabase).length;
             statusEl.innerText = `✅ ${count} appareil(s) enregistré(s) dans l'inventaire`;
         } catch (e) {
-            statusEl.innerText = "⚠️ Erreur de chargement de la base GitHub";
+            statusEl.innerText = "⚠️ Erreur d'accès à GitHub (vérifiez la clé chiffrée)";
         }
     }
 
@@ -344,17 +417,17 @@
 
         idsToShow.forEach(id => {
             const item = fullDatabase[id] || {};
-            const nom = item.Nom_Appareil || "Vierge (Non attribué)";
-            const emp = item.Emplacement ? `📍 ${item.Emplacement}` : "Aucun emplacement";
-            const targetUrl = `${SITE_BASE_URL}?id=${id}`;
+            const nom = escapeHtml(item.Nom_Appareil || "Vierge (Non attribué)");
+            const emp = item.Emplacement ? `📍 ${escapeHtml(item.Emplacement)}` : "Aucun emplacement";
+            const targetUrl = `${SITE_BASE_URL}?id=${encodeURIComponent(id)}`;
             const qrImgUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(targetUrl)}`;
 
             const card = document.createElement("div");
             card.className = "qr-item";
             card.onclick = () => openDeviceDetail(id);
             card.innerHTML = `
-                <img src="${qrImgUrl}" alt="${id}" loading="lazy">
-                <div class="qr-item-id">${id}</div>
+                <img src="${qrImgUrl}" alt="${escapeHtml(id)}" loading="lazy">
+                <div class="qr-item-id">${escapeHtml(id)}</div>
                 <div class="qr-item-name">${nom}</div>
                 <div class="qr-item-loc">${emp}</div>
             `;
@@ -378,12 +451,12 @@
             matchCount++;
             const tr = document.createElement("tr");
             tr.innerHTML = `
-                <td><span class="link-id" onclick="openDeviceDetail('${id}')">${id}</span></td>
-                <td><b>${item.Nom_Appareil || "—"}</b></td>
-                <td>${item.Emplacement || "—"}</td>
-                <td>${item.Modifie_Par || "—"}</td>
-                <td>${item.Commentaire || "—"}</td>
-                <td>${item.Date_MAJ || "—"}</td>
+                <td><span class="link-id" onclick="openDeviceDetail('${escapeHtml(id)}')">${escapeHtml(id)}</span></td>
+                <td><b>${escapeHtml(item.Nom_Appareil || "—")}</b></td>
+                <td>${escapeHtml(item.Emplacement || "—")}</td>
+                <td>${escapeHtml(item.Modifie_Par || "—")}</td>
+                <td>${escapeHtml(item.Commentaire || "—")}</td>
+                <td>${escapeHtml(item.Date_MAJ || "—")}</td>
             `;
             tbody.appendChild(tr);
         });
@@ -429,6 +502,8 @@
             return;
         }
 
+        localStorage.setItem("inv_qr_username", modifiePar);
+
         const btn = document.getElementById("btnSave");
         btn.innerText = "⏳ Enregistrement en cours...";
         btn.disabled = true;
@@ -436,7 +511,7 @@
         try {
             const checkUrl = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${DATA_FILE}?_=${Date.now()}`;
             const checkRes = await fetch(checkUrl, {
-                headers: { "Authorization": "token " + getToken() }
+                headers: { "Authorization": "Bearer " + activeToken }
             });
 
             if (checkRes.status === 200) {
@@ -455,7 +530,7 @@
             };
 
             const bodyPayload = {
-                message: "MAJ " + currentQrId,
+                message: `MAJ ${currentQrId} par ${modifiePar}`,
                 content: toBase64Utf8(JSON.stringify(fullDatabase, null, 2))
             };
             if (fileSha) bodyPayload.sha = fileSha;
@@ -463,7 +538,7 @@
             const putRes = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${DATA_FILE}`, {
                 method: "PUT",
                 headers: {
-                    "Authorization": "token " + getToken(),
+                    "Authorization": "Bearer " + activeToken,
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify(bodyPayload)
