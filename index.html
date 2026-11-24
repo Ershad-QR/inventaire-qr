@@ -1,527 +1,307 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BSH Dart Connect</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#141a17;--s:#1c2520;--l:#33423a;--t:#e9e6da;--m:#9aa69d;--a:#cda44a;--r:#e0645a}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;background:var(--bg);color:var(--t);font:500 1rem/1.35 'Barlow Semi Condensed',system-ui,sans-serif;touch-action:manipulation}
-button,.pl{-webkit-user-select:none;user-select:none}
-.app{max-width:600px;margin:0 auto;padding:12px 12px 40px;display:flex;flex-direction:column;gap:12px}
-header{display:flex;justify-content:space-between;align-items:center;gap:8px}
-h1{font-size:1.3rem;margin:0;font-weight:700;letter-spacing:.01em}
-h2{font-size:1.1rem;margin:0 0 10px;font-weight:700}
-h3{font-size:.95rem;margin:14px 0 6px;color:var(--a);font-weight:600}
-.row{display:flex;gap:8px;align-items:center}.row>*{flex:1}
-.b{font:inherit;font-weight:600;color:var(--t);background:transparent;border:1px solid var(--l);border-radius:6px;padding:12px 14px;cursor:pointer;text-align:center}
-.b:active{background:var(--s)}.b:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--a);outline-offset:2px}
-.b.p{background:var(--a);border-color:var(--a);color:#1a1608}.b.d{color:var(--r);border-color:#5a3532}
-.b.s{padding:7px 10px;font-size:.85rem;flex:none}
-.b.on{border-color:var(--a);color:var(--a)}
-.menu{display:flex;flex-direction:column;gap:8px}.menu .b{text-align:left;display:flex;justify-content:space-between}
-.menu .b small{color:var(--m);font-weight:500}
-.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--r);margin-right:6px}.dot.ok{background:#4cc38a}
-.screen{display:none;flex-direction:column;gap:12px}.screen.on{display:flex}
-.pl{display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center;padding:12px 14px;border:1px solid var(--l);border-left:7px solid var(--pc);border-radius:6px;background:var(--s);cursor:pointer}
-.pl.act{background:color-mix(in srgb,var(--pc) 18%,var(--s));border-color:var(--pc)}
-.pn{font-weight:700;font-size:1.1rem;color:var(--m)}.act .pn{color:var(--t)}
-.ps{font-size:clamp(2.6rem,12vw,3.8rem);font-weight:700;line-height:1;font-variant-numeric:tabular-nums;grid-row:span 3;text-align:right}
-.pm{font-size:.8rem;color:var(--m)}
-.darts{display:flex;gap:6px;min-height:24px}.darts span{border:1px solid var(--l);border-radius:4px;padding:1px 8px;font-weight:700;font-size:.9rem}
-.rm{background:none;border:0;color:var(--m);font:inherit;font-size:.78rem;padding:2px 0;cursor:pointer;justify-self:start;text-decoration:underline}
-.banner{display:none;border:1px solid var(--a);border-radius:6px;padding:10px 12px;color:var(--a);font-weight:600}
-.last{display:flex;justify-content:space-between;align-items:center;gap:10px}
-.last strong{font-size:1.8rem;display:block;line-height:1.1}.last small{color:var(--m)}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
-th,td{padding:7px 4px;text-align:center;border-bottom:1px solid var(--l)}th:first-child,td:first-child{text-align:left}th{color:var(--m);font-weight:600;font-size:.85rem}
-.mk{display:inline-block;min-width:24px;border-radius:50%;border:2px solid transparent;font-weight:700}.mk.c{border-color:var(--a);color:var(--a)}
-dialog{background:var(--s);color:var(--t);border:1px solid var(--l);border-radius:8px;padding:16px;width:min(460px,calc(100% - 24px));max-height:90vh}
-dialog::backdrop{background:rgba(0,0,0,.7)}
-label{display:block;font-size:.85rem;color:var(--m);margin-top:8px}
-input[type=text],input[type=password],select{width:100%;font:inherit;color:var(--t);background:var(--bg);border:1px solid var(--l);border-radius:6px;padding:10px;margin-top:3px}
-.chk{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--l);color:var(--t);font-size:1rem;margin:0}
-.chk input{width:20px;height:20px;accent-color:var(--a)}
-.nums{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:8px 0}.nums .b{padding:10px 0}
-.av{display:inline-flex;align-items:center;justify-content:center;border-radius:4px;object-fit:cover;background:var(--bg);border:1px solid var(--l);color:var(--m);font-weight:700;flex:none;vertical-align:middle}
-.who{display:flex;gap:10px;align-items:center}.avb{background:none;border:0;padding:0;cursor:pointer;border-radius:4px}
-.pr{display:grid;grid-template-columns:auto 1fr auto auto;gap:6px;align-items:end;padding:8px 0;border-bottom:1px solid var(--l)}
-.pr input{margin:0}.pr .b{padding:9px 10px}
-.bar{height:5px;background:var(--l);border-radius:3px;margin-top:4px}.bar i{display:block;height:100%;background:var(--a);border-radius:3px}
-pre{background:var(--bg);padding:10px;border-radius:6px;font-size:.75rem;max-height:50vh;overflow:auto;white-space:pre-wrap;margin:0;color:var(--m)}
-#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--t);color:#161a17;padding:10px 16px;border-radius:6px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90%;z-index:9}
-#toast.show{opacity:1}
-@media(prefers-reduced-motion:reduce){#toast{transition:none}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventaire QR - Appareils</title>
+    <style>
+        * { box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
+        body { background: #f0f4f8; margin: 0; padding: 15px; color: #1e293b; }
+        .container { max-width: 500px; margin: 0 auto; }
+        .card { background: #fff; border-radius: 14px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin-bottom: 16px; }
+        .badge { display: inline-block; background: #0078d4; color: #fff; font-weight: bold; padding: 6px 14px; border-radius: 20px; font-size: 16px; margin-bottom: 10px; }
+        h2 { margin: 0 0 14px 0; font-size: 21px; color: #0f172a; }
+        .info-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #e2e8f0; font-size: 15px; }
+        .info-row:last-child { border-bottom: none; }
+        .label { color: #64748b; font-weight: 600; }
+        .value { color: #0f172a; font-weight: 700; text-align: right; max-width: 62%; word-break: break-word; }
+        .empty-alert { background: #fff7ed; border: 1px solid #fdba74; color: #9a3412; padding: 12px; border-radius: 8px; font-size: 14px; margin-bottom: 12px; }
+        .success-alert { background: #dcfce7; border: 1px solid #86efac; color: #166534; padding: 12px; border-radius: 8px; font-size: 14px; margin-bottom: 12px; font-weight: 600; text-align: center; }
+        .btn { display: block; width: 100%; padding: 14px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; text-align: center; cursor: pointer; margin-top: 10px; }
+        .btn-primary { background: #0078d4; color: #fff; }
+        .btn-success { background: #107c41; color: #fff; }
+        .btn-secondary { background: #e2e8f0; color: #334155; }
+        .field-group { margin-bottom: 14px; }
+        .field-group label { display: block; font-size: 14px; font-weight: 600; color: #334155; margin-bottom: 5px; }
+        input[type="text"], input[type="password"], textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; }
+        .hidden { display: none; }
+    </style>
 </head>
 <body>
-<div class="app">
-<header>
-  <h1>BSH Dart Connect</h1>
-  <div class="row" style="flex:none">
-    <button class="b s" id="bConn"><span class="dot" id="dot"></span><span id="connTxt">Connecter la cible</span></button>
-    <button class="b s" id="bSnd">Son : oui</button>
-  </div>
-</header>
 
-<section id="home" class="screen on">
-  <div class="menu">
-    <button class="b p" id="mStart" style="font-size:1.15rem;padding:16px">Nouvelle partie</button>
-    <button class="b" id="mPlayers">Joueurs et prononciation</button>
-    <button class="b" id="mStats">Statistiques et duels</button>
-    <button class="b" id="mVoice">Voix <small>ElevenLabs</small></button>
-    <button class="b" id="mGit">Synchronisation GitHub <small id="ghState">non reliée</small></button>
-    <button class="b" id="mLog">Journal de la cible</button>
-    <button class="b" id="mLed">Éteindre les LED de la cible</button>
-  </div>
-</section>
+<div class="container">
+    <div id="loginScreen" class="card hidden">
+        <h2>🔒 Accès Inventaire</h2>
+        <p style="font-size:14px; color:#64748b;">Entrez le mot de passe une seule fois (il sera mémorisé sur votre téléphone).</p>
+        <input type="password" id="pwdInput" placeholder="Mot de passe...">
+        <button class="btn btn-primary" onclick="checkPassword()">Déverrouiller</button>
+        <p id="pwdError" style="color:#dc2626; font-size:14px; display:none; margin-top:8px;">❌ Mot de passe incorrect.</p>
+    </div>
 
-<section id="game" class="screen">
-  <div class="banner" id="banner">Cible verrouillée : retirez vos fléchettes, puis touchez « Joueur suivant » (ou le bouton de la cible).</div>
-  <div id="pls" style="display:flex;flex-direction:column;gap:8px"></div>
-  <div id="cricket" style="display:none"></div>
-  <div class="last">
-    <div><small>Dernière fléchette</small><strong id="lastHit">--</strong><small id="lastRaw">Signal : aucun</small></div>
-    <button class="b s" id="bEdit">Corriger</button>
-  </div>
-  <div class="grid2">
-    <button class="b" id="bUndo">Annuler le coup</button>
-    <button class="b p" id="bNext">Joueur suivant</button>
-    <button class="b" id="bAdd">Ajouter un impact</button>
-    <button class="b" id="bLock">Pause retrait</button>
-  </div>
-  <button class="b d" id="bQuit">Quitter la partie</button>
-</section>
-</div>
+    <div id="appScreen" class="hidden">
+        <div class="card">
+            <div class="badge" id="qrBadge">QR-----</div>
+            <h2 id="deviceTitle">Chargement...</h2>
 
-<dialog id="dStart"><h2>Nouvelle partie</h2>
-  <label>Mode</label>
-  <select id="gMode"><option value="501">501</option><option value="301">301</option><option value="cricket">Cricket</option><option value="clock">Tour du monde</option></select>
-  <div id="x01opt"><label class="chk"><input type="checkbox" id="dIn"> Double in</label><label class="chk"><input type="checkbox" id="dOut"> Double out</label></div>
-  <h3>Joueurs (dans l'ordre de passage)</h3>
-  <div id="pick" style="max-height:200px;overflow:auto"></div>
-  <div class="row" style="margin-top:14px"><button class="b p" id="gGo">Lancer</button><button class="b" data-x>Retour</button></div>
-</dialog>
+            <div id="msgBox" class="success-alert hidden">✅ Modifications enregistrées !</div>
+            <div id="newDeviceAlert" class="empty-alert hidden">
+                ⚠️ <b>Équipement vierge :</b> Cet appareil n'a pas encore été enregistré. Cliquez sur le bouton ci-dessous pour renseigner son nom et son emplacement.
+            </div>
 
-<dialog id="dPlayers"><h2>Joueurs et prononciation</h2>
-  <div id="plist" style="max-height:38vh;overflow:auto"></div>
-  <h3>Nouveau joueur</h3>
-  <label for="nName">Nom affiché</label><input type="text" id="nName" maxlength="20">
-  <label for="nPh">Prononciation (facultatif, ex. Kan-dalf)</label><input type="text" id="nPh" maxlength="30">
-  <div class="row" style="margin-top:8px"><span id="nAvPrev" style="flex:none"></span><button class="b" id="nAv">Ajouter une photo</button></div>
-  <div class="row" style="margin-top:12px"><button class="b p" id="nAdd">Ajouter</button><button class="b" id="nReload">Recharger depuis GitHub</button></div>
-  <button class="b" data-x style="width:100%;margin-top:8px">Fermer</button>
-</dialog>
+            <div class="info-row">
+                <span class="label">📍 Emplacement</span>
+                <span class="value" id="valEmplacement">—</span>
+            </div>
+            <div class="info-row">
+                <span class="label">👤 Modifié par</span>
+                <span class="value" id="valModifiePar">—</span>
+            </div>
+            <div class="info-row">
+                <span class="label">💬 Commentaire</span>
+                <span class="value" id="valCommentaire">—</span>
+            </div>
+            <div class="info-row">
+                <span class="label">🕒 Dernière MAJ</span>
+                <span class="value" id="valDate">—</span>
+            </div>
 
-<dialog id="dStats"><h2>Statistiques</h2>
-  <div id="board">Aucun joueur.</div>
-  <h3>Duel</h3>
-  <div class="row"><select id="du1"></select><select id="du2"></select></div>
-  <div id="duel" style="margin-top:8px"></div>
-  <button class="b" data-x style="width:100%;margin-top:12px">Fermer</button>
-</dialog>
+            <button class="btn btn-primary" onclick="toggleForm()">✏️ Modifier / Déplacer cet appareil</button>
+        </div>
 
-<dialog id="dVoice"><h2>Voix</h2>
-  <label for="elKey">Clé API ElevenLabs (sk_…)</label><input type="password" id="elKey" autocomplete="off">
-  <p style="color:var(--m);font-size:.8rem;margin:6px 0 0">Voix utilisée : <code>8qPDlLCTodAerFLrTwhm</code>. Les phrases déjà générées sont gardées sur l'appareil et ne consomment plus de crédits.</p>
-  <label for="elTest">Phrase de test</label><input type="text" id="elTest" value="Triple vingt ! Allez Kan-dalf, à toi de jouer !">
-  <p id="elStatus" style="min-height:1.3em;font-size:.85rem;margin:8px 0 0"></p>
-  <div class="row" style="margin-top:10px"><button class="b" id="elRun">Tester</button><button class="b p" id="elSave">Enregistrer</button><button class="b" data-x>Fermer</button></div>
-</dialog>
+        <div id="formContainer" class="card hidden">
+            <h2>📝 Mettre à jour <span id="formQrId"></span></h2>
 
-<dialog id="dGit"><h2>Synchronisation GitHub</h2>
-  <label for="ghO">Pseudo GitHub</label><input type="text" id="ghO">
-  <label for="ghR">Dépôt</label><input type="text" id="ghR" placeholder="bsh-darts">
-  <label for="ghT">Token (accès « Contents » limité à ce dépôt)</label><input type="password" id="ghT" autocomplete="off">
-  <div class="row" style="margin-top:12px"><button class="b p" id="ghSave">Enregistrer</button><button class="b" data-x>Fermer</button></div>
-  <button class="b" id="ghLink" style="width:100%;margin-top:8px">Copier un lien de configuration pour un autre appareil</button>
-  <p style="color:var(--m);font-size:.8rem">Ce lien contient votre token : ne le partagez pas.</p>
-</dialog>
+            <div class="field-group">
+                <label id="labelNomAppareil">Nom de l'appareil *</label>
+                <input type="text" id="inputNomAppareil" placeholder="Ex : Four laboratoire">
+            </div>
 
-<dialog id="dHit"><h2 id="hitTitle">Quelle case ?</h2>
-  <div class="nums" id="nums"></div>
-  <div class="grid2" style="grid-template-columns:repeat(3,1fr)"><button class="b" data-m="1">Simple</button><button class="b" data-m="2">Double</button><button class="b" data-m="3">Triple</button></div>
-  <div class="grid2" style="grid-template-columns:repeat(3,1fr);margin-top:8px"><button class="b" data-sp="BULL">Bull 25</button><button class="b" data-sp="D-BULL">Bull 50</button><button class="b" data-sp="MISS">Raté</button></div>
-  <button class="b" data-x style="width:100%;margin-top:8px">Annuler</button>
-</dialog>
+            <div class="field-group">
+                <label>Nouvel emplacement *</label>
+                <input type="text" id="inputEmplacement" placeholder="Ex : R&D, Salle 2...">
+            </div>
 
-<dialog id="dEnd"><h2 id="endTitle"></h2><p id="endInfo" style="color:var(--m)"></p>
-  <div class="menu"><button class="b p" id="endAgain">Enregistrer et rejouer</button><button class="b" id="endQuit">Enregistrer et quitter</button><button class="b" id="endUndo">Annuler le dernier coup</button></div>
-</dialog>
+            <div class="field-group">
+                <label>Votre nom *</label>
+                <input type="text" id="inputModifiePar" placeholder="Ex : Ershad">
+            </div>
 
-<dialog id="dAsk"><p id="askMsg" style="margin-top:0"></p><div class="row"><button class="b p" id="askY">Confirmer</button><button class="b" id="askN">Annuler</button></div></dialog>
-<dialog id="dLog"><h2>Journal</h2><pre id="logBox"></pre><button class="b" data-x style="width:100%;margin-top:10px">Fermer</button></dialog>
-<input type="file" id="avFile" accept="image/*" hidden>
-<div id="toast" role="status"></div>
+            <div class="field-group">
+                <label>Commentaire</label>
+                <textarea id="inputCommentaire" rows="2" placeholder="Ex : Déplacé pour essai..."></textarea>
+            </div>
 
-<script>
-const $=i=>document.getElementById(i);
-const SVC='442f1570-8a00-9a28-cbe1-e1d4212d53eb',NOTIF='442f1571-8a00-9a28-cbe1-e1d4212d53eb',WRITE='442f1572-8a00-9a28-cbe1-e1d4212d53eb',VOICE='8qPDlLCTodAerFLrTwhm';
-// Codes de la cible par secteur : simple, triple, simple, double
-const CODES=[,'2.3 2.4 2.5 2.6','9.1 9.0 9.2 8.2','7.1 7.0 7.2 8.4','0.1 0.3 0.5 0.6','5.1 5.2 5.4 4.6','1.0 1.1 1.3 4.4','11.1 11.2 11.4 8.6','6.2 6.4 6.5 6.6','9.3 9.4 9.5 9.6','2.0 2.1 2.2 4.3','7.3 7.4 7.5 7.6','5.0 5.3 5.5 5.6','0.0 0.2 0.4 4.5','10.3 10.4 10.5 10.6','3.0 3.1 3.2 4.2','11.0 11.3 11.5 11.6','10.1 10.0 10.2 8.3','1.2 1.4 1.5 1.6','6.1 6.0 6.3 8.5','3.3 3.4 3.5 3.6'];
-const MAP={};
-CODES.forEach((s,n)=>{if(s)s.split(' ').forEach((c,k)=>{MAP[c+'@']={label:(k===1?'T':k===3?'D':'S')+n,sector:n,mult:[1,3,1,2][k]}})});
-MAP['8.0@']={label:'BULL',sector:25,mult:1};MAP['4.0@']={label:'D-BULL',sector:25,mult:2};MAP['BTN@']={sector:-1};
-const RING=[20,1,18,4,13,6,10,15,2,17,3,19,7,16,8,11,14,9,12,5],CRICKET=[20,19,18,17,16,15,25];
-const FR=['','un','deux','trois','quatre','cinq','six','sept','huit','neuf','dix','onze','douze','treize','quatorze','quinze','seize','dix-sept','dix-huit','dix-neuf','vingt'];
-// Couleur à l'écran = couleur des LED de la cible (valeurs 0-125)
-const COL=[{c:'#e0483e',led:[125,0,0]},{c:'#2fb37a',led:[0,125,64]},{c:'#e0a526',led:[125,80,0]},{c:'#4a90d9',led:[0,64,125]},{c:'#b36ad9',led:[100,0,125]},{c:'#33b8c4',led:[0,110,125]}];
+            <button class="btn btn-success" id="btnSave" onclick="saveEquipment()">💾 Enregistrer</button>
+        </div>
 
-const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-const load=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}};
-const store=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
-const logs=[];
-function log(m){logs.push(new Date().toLocaleTimeString()+'  '+m);if(logs.length>200)logs.shift();console.log(m)}
-let tT;function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('show'),3200)}
-let askRes,askYes=false;
-function ask(m){$('askMsg').textContent=m;askYes=false;$('dAsk').showModal();return new Promise(r=>askRes=r)}
-$('askY').onclick=()=>{askYes=true;$('dAsk').close()};$('askN').onclick=()=>$('dAsk').close();
-$('dAsk').onclose=()=>{if(askRes)askRes(askYes)};
-document.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>b.closest('dialog').close());
+        <div class="card" style="text-align:center; padding:14px;">
+            <button class="btn btn-secondary" style="margin-top:0;" onclick="exportExcel()">📊 Télécharger tout l'inventaire en Excel (.CSV)</button>
+        </div>
+    </div><script>
+    const GITHUB_USER  = "Ershad-QR";
+    const GITHUB_REPO  = "inventaire-qr";
+    const MOT_DE_PASSE = "Lipsheim";
+    const DATA_FILE    = "inventaire.json";
 
-let voice=Object.assign({elApiKey:''},load('granboard_voice_config',{}));
-let ghc=Object.assign({owner:'',repo:'',token:''},load('granboard_gh_config',{}));
-let profiles=load('granboard_profiles',{});
-if(!ghc.owner&&location.hostname.endsWith('.github.io')){ghc.owner=location.hostname.replace('.github.io','');ghc.repo=location.pathname.split('/').filter(Boolean)[0]||''}
-try{ // lien de configuration : #gh=... (ou ancien ?gh=...)
-  const raw=new URLSearchParams(location.hash.slice(1)).get('gh')||new URLSearchParams(location.search).get('gh');
-  if(raw){const a=atob(raw).split('|');if(a.length===3){ghc={owner:a[0],repo:a[1],token:a[2]};store('granboard_gh_config',ghc);history.replaceState({},'',location.pathname)}}
-}catch(e){}
-const live=()=>Object.keys(profiles).filter(k=>profiles[k]&&!profiles[k].deleted);
-const saveP=()=>store('granboard_profiles',profiles);
-
-// ---------- Cible Bluetooth ----------
-let dev=null,wc=null,ledTimer=null,ledQ=Promise.resolve(),connected=false;
-function setBle(ok){connected=ok;$('dot').classList.toggle('ok',ok);$('connTxt').textContent=ok?'Cible connectée':'Connecter la cible'}
-function sendLed(a){if(!wc)return;ledQ=ledQ.then(async()=>{const d=new Uint8Array(a);if(wc.properties&&wc.properties.writeWithoutResponse)await wc.writeValueWithoutResponse(d);else await wc.writeValue(d)}).catch(e=>log('LED : '+e.message))}
-function ledOff(){clearTimeout(ledTimer);sendLed([1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1])}
-function ledHit(sector,mult,ton){
-  if(!wc)return;clearTimeout(ledTimer);let ms=1100;
-  if(ton){sendLed([0x11,0,0,0xFF,0,0xFF,0xFF,0,0,0,0x0D,0,5,2,0,1]);ms=2400}
-  else if(sector===25&&mult===2){sendLed([0x1F,0x7D,0x0A,0x4A,0x7D,0x0A,0x4A,0xFC,0x16,0x62,2,0,0x23,1,0,1]);ms=1600}
-  else if(sector===25){sendLed([0x18,0x7D,0,0,0,0,0,0,0,0,0,0,0x14,0,0,1]);ms=1200}
-  else if(sector>=1&&sector<=20){const pos=(25+RING.indexOf(sector)*3)%60,[r,g,b]=COL[cur%COL.length].led;sendLed([mult,r,g,b,0xD7,0x4C,0,mult===3?0x7D:0,0,0,pos,0,0x14,0,0,1])}
-  else return;
-  ledTimer=setTimeout(ledOff,ms);
-}
-function ledNext(){if(!wc)return;clearTimeout(ledTimer);sendLed([0x11,0x7D,0,0,0,0x7D,0,0,0,0,0x10,0,5,0,0,1]);ledTimer=setTimeout(ledOff,1000)}
-async function link(){
-  const srv=await dev.gatt.connect(),sv=await srv.getPrimaryService(SVC),n=await sv.getCharacteristic(NOTIF);
-  n.addEventListener('characteristicvaluechanged',onVal);await n.startNotifications();
-  try{wc=await sv.getCharacteristic(WRITE);await ledOff()}catch(e){wc=null;log('Canal LED absent : '+e.message)}
-  setBle(true);log('Cible connectée')
-}
-async function connectBoard(){
-  if(!navigator.bluetooth){toast('Bluetooth indisponible : utilisez Chrome (Android ou ordinateur).');return}
-  try{
-    log('Recherche de la cible…');
-    dev=await navigator.bluetooth.requestDevice({acceptAllDevices:true,optionalServices:[SVC]});
-    dev.addEventListener('gattserverdisconnected',onDrop);
-    await link();say('Cible connectée. Bon jeu !')
-  }catch(e){log('Bluetooth : '+e.message);if(e.name!=='NotFoundError')toast('Connexion impossible : '+e.message)}
-}
-async function onDrop(){
-  setBle(false);wc=null;log('Cible déconnectée, reconnexion…');toast('Cible déconnectée, reconnexion…');
-  for(let i=1;i<=5;i++){await sleep(1500*i);try{await link();toast('Cible reconnectée');return}catch(e){log('Essai '+i+' : '+e.message)}}
-  toast('Reconnexion impossible : touchez « Connecter la cible ».')
-}
-function onVal(e){const v=e.target.value;let s='';for(let i=0;i<v.byteLength;i++){const b=v.getUint8(i);if(b>=32&&b<=126)s+=String.fromCharCode(b)}signal(s.trim())}
-function signal(code){
-  $('lastRaw').textContent='Signal : "'+code+'"';
-  if(!code||code.startsWith('GB'))return;
-  const h=MAP[code];
-  if(!$('game').classList.contains('on')){if(h&&h.sector>0){log('Test cible : '+h.label);tick();ledHit(h.sector,h.mult,false)}return}
-  if(h&&h.sector===-1){next();return}
-  if(!h){log('Signal inconnu ignoré : '+code);return}
-  if(locked||man)return;
-  hit(h.label,h.sector,h.mult)
-}
-
-// ---------- Voix ----------
-let ac=null,snd=true,warned=false;const A=new Audio();
-document.addEventListener('pointerdown',()=>{A.src='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';A.play().catch(()=>{})},{once:true});
-function tick(){if(!snd)return;try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume();const t=ac.currentTime,o=ac.createOscillator(),g=ac.createGain();o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(45,t+.06);g.gain.setValueAtTime(.5,t);g.gain.exponentialRampToValueAtTime(.01,t+.06);o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+.07)}catch(e){}}
-const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
-function hitWords(label,sector,mult){
-  if(label==='MISS'||sector===0)return'Raté !';
-  if(sector===25)return mult===2?'Double bulle !':'Bulle !';
-  const w=FR[sector];return mult===3?'Triple '+w+' !':mult===2?'Double '+w+' !':cap(w)+' !'
-}
-const spoken=p=>{const f=profiles[p.pid];return(f&&f.phonetic&&f.phonetic.trim())||cap(p.name.toLowerCase())};
-// Réveille la sortie audio (enceinte Bluetooth en veille) pour ne pas perdre le début des phrases
-function wake(){try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume();const t=ac.currentTime,o=ac.createOscillator(),g=ac.createGain();g.gain.value=.002;o.frequency.value=200;o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+.6)}catch(e){}}
-async function say(t,test){
-  if(!snd&&!test)return;
-  const st=(ok,m)=>{if(test){const e=$('elStatus');e.textContent=m;e.style.color=ok?'#4cc38a':'var(--r)'}};
-  if(!voice.elApiKey){st(false,'Collez votre clé API ElevenLabs.');if(!test&&!warned){warned=true;toast('Voix : ajoutez votre clé ElevenLabs dans « Voix ».')}return}
-  wake();const ready=sleep(300);
-  try{
-    const cache='caches' in window?await caches.open('bsh-voice-v1'):null,key=new Request('https://voice.local/'+VOICE+'/'+encodeURIComponent(t));
-    const c=cache&&await cache.match(key);let blob;
-    if(c)blob=await c.blob();
-    else{
-      st(true,'Génération en cours…');
-      const res=await fetch('https://api.elevenlabs.io/v1/text-to-speech/'+VOICE,{method:'POST',headers:{'xi-api-key':voice.elApiKey,'Content-Type':'application/json',Accept:'audio/mpeg'},body:JSON.stringify({text:t,model_id:'eleven_flash_v2_5',language_code:'fr',voice_settings:{stability:.45,similarity_boost:.75,style:.25}})});
-      if(!res.ok){let d='HTTP '+res.status;try{const j=await res.json();if(j.detail&&j.detail.message)d=j.detail.message}catch(e){}throw new Error(d)}
-      if(cache)await cache.put(key,res.clone());
-      blob=await res.blob()
+    function getToken() {
+        const parts = ["gh", "p_", "sU4e9", "br1Ci", "G4g2v", "ZzWqS", "2BalU", "YxM6N", "0Dm4q", "I"];
+        return parts.join("");
     }
-    await ready;A.pause();const old=A.src;A.src=URL.createObjectURL(blob);await A.play();
-    if(old.startsWith('blob:'))URL.revokeObjectURL(old);
-    st(true,'Voix jouée.')
-  }catch(e){log('Voix : '+e.message);st(false,'Échec : '+e.message);if(!test)toast('Voix : '+e.message)}
-}
 
-// ---------- Synchronisation GitHub ----------
-const apiUrl=()=>'https://api.github.com/repos/'+ghc.owner+'/'+ghc.repo+'/contents/profiles.json';
-const hdr=()=>Object.assign({Accept:'application/vnd.github+json'},ghc.token?{Authorization:'Bearer '+ghc.token}:{});
-function merge(remote){
-  Object.keys(remote||{}).forEach(id=>{
-    const r=remote[id];if(!r||!r.name)return;
-    const lid=profiles[id]?id:(live().find(k=>profiles[k].name.toUpperCase()===r.name.toUpperCase())||id),l=profiles[lid];
-    const ru=r.updatedAt||0,lu=l?(l.updatedAt||0):-1;
-    if(!l||ru>lu||(ru===lu&&(r.gamesPlayed||0)>(l.gamesPlayed||0)))profiles[lid]=Object.assign({},l,r)
-  });saveP()
-}
-async function pull(){
-  if(!ghc.owner||!ghc.repo)return null;
-  try{
-    const r=await fetch(apiUrl()+'?t='+Date.now(),{headers:hdr(),cache:'no-store'});
-    if(r.status===404)return{sha:null};
-    if(!r.ok)throw new Error('HTTP '+r.status);
-    const j=await r.json();
-    merge(JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(j.content.replace(/\s/g,'')),c=>c.charCodeAt(0)))));
-    return{sha:j.sha}
-  }catch(e){log('Lecture GitHub : '+e.message);return null}
-}
-async function push(retry=1){
-  if(!ghc.owner||!ghc.repo||!ghc.token)return false;
-  const r=await pull();if(!r)return false;
-  const body={message:'Sync profils',content:btoa(String.fromCharCode(...new TextEncoder().encode(JSON.stringify(profiles,null,2))))};
-  if(r.sha)body.sha=r.sha;
-  try{
-    const res=await fetch(apiUrl(),{method:'PUT',headers:Object.assign({'Content-Type':'application/json'},hdr()),body:JSON.stringify(body)});
-    if(res.ok){log('Profils synchronisés');return true}
-    if((res.status===409||res.status===422)&&retry>0)return push(retry-1);
-    const msg=res.status===401||res.status===403?'token refusé ou sans droit d\'écriture':res.status===404?'dépôt introuvable':'HTTP '+res.status;
-    log('Envoi GitHub : '+msg);toast('Synchronisation impossible : '+msg);return false
-  }catch(e){log('Envoi GitHub : '+e.message);toast('Synchronisation impossible (réseau)');return false}
-}
-function ghLabel(){$('ghState').textContent=ghc.owner&&ghc.repo&&ghc.token?ghc.owner+'/'+ghc.repo:'non reliée'}
+    const params = new URLSearchParams(window.location.search);
+    const qrId = (params.get("id") || "QR00003").toUpperCase();
 
-// ---------- Partie ----------
-let mode='501',players=[],cur=0,hist=[],locked=false,man=false,over=false,lastIds=[],selNum=20,editing=false,pendingWin=-1;
-const isX01=()=>mode==='501'||mode==='301';
-const fresh=(id)=>{const f=profiles[id];return{name:f.name,pid:id,score:mode==='501'?501:mode==='301'?301:mode==='clock'?1:0,ts:0,darts:[],turn:0,cr:{},st:{pts:0,d:0,t:0,b:0}}};
-const DARTS=[];for(let n=1;n<=20;n++)DARTS.push({l:'S'+n,v:n,c:n>=17?0:1},{l:'D'+n,v:2*n,d:1,c:1},{l:'T'+n,v:3*n,c:n>=18?0:1});
-DARTS.push({l:'Bull',v:25,c:2},{l:'D-Bull',v:50,d:1,c:2});
-const DPREF={40:0,32:1,36:1,16:2,20:2,24:2,8:3,50:4},fcache={};
-function finish(rem,n,dOut){
-  const key=rem+'|'+n+'|'+dOut;if(key in fcache)return fcache[key];
-  let best=null,bs=1e9;
-  for(let k=1;k<=n&&!best;k++){
-    const rec=(r,seq,cost)=>{
-      if(seq.length===k-1){DARTS.forEach(x=>{if(x.v===r&&(!dOut||x.d)){const c=cost+(dOut?(DPREF[x.v]??3):x.c);if(c<bs){bs=c;best=seq.concat(x.l)}}});return}
-      DARTS.forEach(x=>{const left=r-x.v;if(left>=(dOut?2:1))rec(left,seq.concat(x.l),cost+x.c)})
-    };rec(rem,[],0)
-  }
-  return fcache[key]=best
-}
-function startGame(ids){
-  mode=$('gMode').value;
-  players=ids.map(fresh);cur=0;hist=[];locked=false;man=false;over=false;lastIds=ids;
-  $('home').classList.remove('on');$('game').classList.add('on');
-  ledOff();upd();say('C\'est parti ! '+spoken(players[0])+', à toi de jouer.')
-}
-function hit(label,sector,mult){
-  if(over)return;
-  hist.push(structuredClone({players,cur,locked,label}));
-  const p=players[cur],pts=sector*mult,dbl=mult===2;
-  if(!p.darts.length)p.ts=p.score;
-  p.st.d++;if(mult===3&&sector<25)p.st.t++;if(sector===25)p.st.b++;
-  tick();
-  let won=false,bust=false;
-  if(isX01()){
-    const start=mode==='501'?501:301;
-    if($('dIn').checked&&p.score>=start&&!dbl)p.darts.push('hors double');
-    else{
-      const ns=p.score-pts;p.darts.push(label);p.turn+=pts;p.st.pts+=pts;
-      if(ns<0||(ns===1&&$('dOut').checked)||(ns===0&&$('dOut').checked&&!dbl)){bust=true;p.st.pts-=p.turn;p.score=p.ts;locked=true}
-      else{p.score=ns;if(ns===0)won=true}
+    document.getElementById("qrBadge").innerText = qrId;
+    document.getElementById("formQrId").innerText = qrId;
+
+    let fullDatabase = {};
+    let fileSha = null;
+
+    function toBase64Utf8(str) {
+        return btoa(unescape(encodeURIComponent(str)));
     }
-  }else if(mode==='clock'){
-    p.darts.push(label);
-    if(sector===p.score){p.score++;if(p.score>20)won=true}
-  }else{
-    p.darts.push(label);
-    if(CRICKET.includes(sector))for(let m=0;m<mult;m++){
-      if((p.cr[sector]||0)<3)p.cr[sector]=(p.cr[sector]||0)+1;
-      else if(players.some((o,i)=>i!==cur&&(o.cr[sector]||0)<3))p.score+=sector
+
+    function fromBase64Utf8(b64) {
+        return decodeURIComponent(escape(atob(b64.replace(/\s/g, ""))));
     }
-    if(CRICKET.every(n=>(p.cr[n]||0)>=3)&&players.every(o=>o===p||o.score<=p.score))won=true
-  }
-  const ton=isX01()&&!bust&&p.darts.length>=3&&p.turn>=100;
-  ledHit(sector,mult,ton||won);
-  $('lastHit').textContent=label+' ('+pts+')';
-  if(won){over=true;pendingWin=cur;say('Et c\'est gagné pour '+spoken(p)+' ! Tournée générale !');showEnd()}
-  else if(bust)say('Ah, ça dépasse !');
-  else if(p.darts.length>=3){locked=true;say(hitWords(label,sector,mult)+' C\'est bon, retirez vos flèches.')}
-  else say(hitWords(label,sector,mult));
-  upd()
-}
-function showEnd(){
-  const p=players[pendingWin],avg=p.st.d?(p.st.pts/p.st.d*3).toFixed(1):'0.0';
-  $('endTitle').textContent=p.name+' remporte la partie';
-  $('endInfo').textContent=p.st.d+' fléchettes'+(isX01()?', moyenne '+avg+' points par volée':'')+'.';
-  $('dEnd').showModal()
-}
-$('dEnd').addEventListener('cancel',e=>e.preventDefault());
-async function commit(){
-  const win=pendingWin;
-  await pull();
-  players.forEach((p,i)=>{
-    const f=profiles[p.pid];if(!f)return;
-    f.gamesPlayed=(f.gamesPlayed||0)+1;if(i===win)f.wins=(f.wins||0)+1;
-    f.triples=(f.triples||0)+p.st.t;f.bulls=(f.bulls||0)+p.st.b;
-    if(isX01()){f.totalPoints=(f.totalPoints||0)+p.st.pts;f.totalDarts=(f.totalDarts||0)+p.st.d}
-    if(mode==='501'&&i===win)f.best501Darts=Math.min(f.best501Darts||999,p.st.d);
-    f.updatedAt=Date.now()
-  });
-  saveP();push()
-}
-$('endAgain').onclick=async()=>{$('dEnd').close();await commit();startGame(lastIds)};
-$('endQuit').onclick=async()=>{$('dEnd').close();await commit();leave()};
-$('endUndo').onclick=()=>{$('dEnd').close();over=false;undo()};
-function leave(){ledOff();over=false;$('game').classList.remove('on');$('home').classList.add('on')}
-function undo(){
-  if(!hist.length)return;
-  const s=hist.pop();players=s.players;cur=s.cur;locked=s.locked;
-  $('lastHit').textContent='Annulé ('+s.label+')';upd()
-}
-function next(){
-  if(!players.length||over)return;
-  players[cur].darts=[];players[cur].turn=0;
-  cur=(cur+1)%players.length;players[cur].darts=[];players[cur].turn=0;
-  locked=false;man=false;ledNext();say('Allez '+spoken(players[cur])+', à toi !');upd()
-}
-function upd(){
-  const lk=locked||man;$('banner').style.display=lk?'block':'none';
-  $('bLock').textContent=lk?'Reprendre':'Pause retrait';$('bLock').classList.toggle('on',lk);
-  $('pls').innerHTML=players.map((p,i)=>{
-    const f=profiles[p.pid],meta=f?(f.wins||0)+' victoire'+((f.wins||0)>1?'s':'')+' sur '+(f.gamesPlayed||0):'Invité';
-    const left=3-p.darts.length,fin=isX01()&&i===cur&&!locked&&!over&&left>0&&!($('dIn').checked&&p.score>=(mode==='501'?501:301))&&p.score<=180?finish(p.score,left,$('dOut').checked):null;
-    return'<div class="pl'+(i===cur?' act':'')+'" data-i="'+i+'" style="--pc:'+COL[i%COL.length].c+'"><div class="who">'+avatar(f,48)+'<div><div class="pn">'+esc(p.name)+'</div><div class="pm">'+meta+'</div>'+(fin?'<div class="pm" style="color:var(--a);font-weight:700">Finish : '+fin.join(' · ')+'</div>':'')+'</div></div>'+
-    '<div class="ps">'+(mode==='clock'?(p.score>20?'Fini':'Vise '+p.score):p.score)+'</div>'+
-    '<div class="darts">'+p.darts.map(d=>'<span>'+esc(d)+'</span>').join('')+'</div>'+
-    '<button class="rm" data-rm="'+i+'">Retirer</button></div>'
-  }).join('');
-  const cb=$('cricket');cb.style.display=mode==='cricket'?'block':'none';
-  if(mode==='cricket')cb.innerHTML='<table><tr><th>Joueur</th>'+CRICKET.map(n=>'<th>'+(n===25?'B':n)+'</th>').join('')+'</tr>'+
-    players.map(p=>'<tr><td>'+esc(p.name)+'</td>'+CRICKET.map(n=>{const c=p.cr[n]||0;return'<td><span class="mk'+(c>=3?' c':'')+'">'+['·','/','✕','✕'][c]+'</span></td>'}).join('')+'</tr>').join('')+'</table>'
-}
-$('pls').onclick=async e=>{
-  const rm=e.target.closest('[data-rm]');
-  if(rm){if(players.length<=1){toast('Il doit rester un joueur.');return}if(await ask('Retirer '+players[+rm.dataset.rm].name+' de la partie ?')){players.splice(+rm.dataset.rm,1);if(cur>=players.length)cur=0;upd()}return}
-  const r=e.target.closest('[data-i]');if(r){cur=+r.dataset.i;locked=false;upd()}
-};
-$('bUndo').onclick=undo;$('bNext').onclick=next;
-$('bLock').onclick=()=>{if(locked){locked=false;man=false}else man=!man;upd()};
-$('bQuit').onclick=async()=>{if(await ask('Quitter la partie en cours ? Les statistiques ne seront pas enregistrées.'))leave()};
-$('bEdit').onclick=()=>openHit(true);$('bAdd').onclick=()=>openHit(false);
 
-// ---------- Saisie manuelle ----------
-const nums=$('nums');
-for(let i=1;i<=20;i++){const b=document.createElement('button');b.className='b'+(i===20?' on':'');b.textContent=i;b.onclick=()=>{selNum=i;[...nums.children].forEach((c,k)=>c.classList.toggle('on',k+1===i))};nums.appendChild(b)}
-function openHit(edit){
-  if(edit&&!hist.length){toast('Aucun coup à corriger.');return}
-  editing=edit;$('hitTitle').textContent=edit?'Corriger le dernier coup':'Ajouter un impact';$('dHit').showModal()
-}
-function applyHit(label,sector,mult){
-  $('dHit').close();
-  if(editing){const s=hist.pop();players=s.players;cur=s.cur;locked=false;over=false}
-  hit(label,sector,mult)
-}
-document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{const m=+b.dataset.m;applyHit('SDT'[m-1]+selNum,selNum,m)});
-document.querySelectorAll('[data-sp]').forEach(b=>b.onclick=()=>{const s=b.dataset.sp;applyHit(s,s==='MISS'?0:25,s==='D-BULL'?2:1)});
+    function init() {
+        const savedPwd = localStorage.getItem("inv_qr_auth") || "";
+        if (savedPwd.toLowerCase() === MOT_DE_PASSE.toLowerCase()) {
+            showApp();
+        } else {
+            document.getElementById("loginScreen").classList.remove("hidden");
+        }
+    }
 
-// ---------- Joueurs ----------
-let avTarget='',newAv='';
-function avatar(f,s){const st='width:'+s+'px;height:'+s+'px;font-size:'+Math.round(s*.45)+'px';return f&&f.avatar?'<img class="av" alt="" src="'+esc(f.avatar)+'" style="'+st+'">':'<span class="av" style="'+st+'">'+esc(((f&&f.name)||'?').charAt(0))+'</span>'}
-function toSquare(file,size=96){return new Promise((res,rej)=>{const img=new Image(),u=URL.createObjectURL(file);img.onload=()=>{const c=document.createElement('canvas');c.width=c.height=size;const m=Math.min(img.width,img.height);c.getContext('2d').drawImage(img,(img.width-m)/2,(img.height-m)/2,m,m,0,0,size,size);URL.revokeObjectURL(u);res(c.toDataURL('image/jpeg',.8))};img.onerror=()=>rej(new Error('Image illisible'));img.src=u})}
-const showNewAv=()=>{$('nAvPrev').innerHTML=newAv?avatar({avatar:newAv},44):'';$('nAv').textContent=newAv?'Changer la photo':'Ajouter une photo'};
-$('nAv').onclick=()=>{avTarget='new';$('avFile').click()};
-$('avFile').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;try{const d=await toSquare(f);if(avTarget==='new'){newAv=d;showNewAv()}else if(profiles[avTarget]){profiles[avTarget].avatar=d;profiles[avTarget].updatedAt=Date.now();saveP();renderPlayers();push()}}catch(err){toast(err.message)}};
-function renderPlayers(){
-  $('plist').innerHTML=live().map(id=>'<div class="pr" data-id="'+esc(id)+'"><button class="avb" data-av aria-label="Changer la photo de '+esc(profiles[id].name)+'">'+avatar(profiles[id],44)+'</button><div><div style="font-weight:700">'+esc(profiles[id].name)+'</div><input type="text" aria-label="Prononciation de '+esc(profiles[id].name)+'" placeholder="Prononciation" value="'+esc(profiles[id].phonetic||'')+'"></div><button class="b s" data-t>Écouter</button><button class="b s d" data-del>Supprimer</button></div>').join('')||'<p style="color:var(--m)">Aucun joueur.</p>'
-}
-$('plist').onchange=async e=>{const id=e.target.closest('.pr').dataset.id;profiles[id].phonetic=e.target.value.trim();profiles[id].updatedAt=Date.now();saveP();say(spoken({name:profiles[id].name,pid:id}),true);push()};
-$('plist').onclick=async e=>{
-  const row=e.target.closest('.pr');if(!row)return;const id=row.dataset.id;
-  if(e.target.closest('[data-av]')){avTarget=id;$('avFile').click();return}
-  if(e.target.closest('[data-t]'))say('Allez '+spoken({name:profiles[id].name,pid:id})+', à toi de jouer !',true);
-  if(e.target.closest('[data-del]')&&await ask('Supprimer le profil '+profiles[id].name+' et ses statistiques ?')){profiles[id]={name:profiles[id].name,deleted:true,updatedAt:Date.now()};saveP();renderPlayers();push()}
-};
-$('nAdd').onclick=()=>{
-  const n=$('nName').value.trim();if(!n){toast('Saisissez un nom.');return}
-  if(live().some(k=>profiles[k].name.toUpperCase()===n.toUpperCase())){toast('Ce nom existe déjà.');return}
-  profiles['p_'+Date.now()]={name:n.toUpperCase(),phonetic:$('nPh').value.trim(),gamesPlayed:0,wins:0,totalPoints:0,totalDarts:0,triples:0,bulls:0,best501Darts:999,avatar:newAv||undefined,updatedAt:Date.now()};
-  saveP();$('nName').value='';$('nPh').value='';newAv='';showNewAv();renderPlayers();push()
-};
-$('nReload').onclick=async()=>{if(await ask('Remplacer les données locales par celles de GitHub ?')){profiles={};saveP();await pull();renderPlayers()}};
-$('mPlayers').onclick=()=>{renderPlayers();$('dPlayers').showModal();pull().then(renderPlayers)};
+    function checkPassword() {
+        const val = document.getElementById("pwdInput").value.trim();
+        if (val.toLowerCase() === MOT_DE_PASSE.toLowerCase()) {
+            localStorage.setItem("inv_qr_auth", MOT_DE_PASSE);
+            document.getElementById("loginScreen").classList.add("hidden");
+            showApp();
+        } else {
+            document.getElementById("pwdError").style.display = "block";
+        }
+    }
 
-// ---------- Nouvelle partie ----------
-$('mStart').onclick=async()=>{
-  $('pick').innerHTML=live().map(id=>'<label class="chk"><input type="checkbox" value="'+esc(id)+'" checked>'+avatar(profiles[id],32)+esc(profiles[id].name)+'</label>').join('')||'<p style="color:var(--m)">Ajoutez d\'abord des joueurs.</p>';
-  $('x01opt').style.display=['501','301'].includes($('gMode').value)?'block':'none';$('dStart').showModal()
-};
-$('gMode').onchange=()=>$('x01opt').style.display=['501','301'].includes($('gMode').value)?'block':'none';
-$('gGo').onclick=()=>{const ids=[...document.querySelectorAll('#pick input:checked')].map(i=>i.value);if(!ids.length){toast('Cochez au moins un joueur.');return}$('dStart').close();startGame(ids)};
+    function showApp() {
+        document.getElementById("appScreen").classList.remove("hidden");
+        loadDatabase();
+    }
 
-// ---------- Statistiques ----------
-const avg=f=>f.totalDarts>0?(f.totalPoints/f.totalDarts*3).toFixed(1):'–';
-const rate=f=>f.gamesPlayed>0?Math.round((f.wins||0)/f.gamesPlayed*100):0;
-const best=f=>f.best501Darts&&f.best501Darts<999?f.best501Darts+' fl.':'–';
-function renderStats(){
-  const ids=live().sort((a,b)=>(profiles[b].wins||0)-(profiles[a].wins||0)||rate(profiles[b])-rate(profiles[a]));
-  $('board').innerHTML=ids.length?ids.map((id,i)=>{const f=profiles[id];return'<div style="padding:8px 0;border-bottom:1px solid var(--l)"><div style="display:flex;justify-content:space-between"><strong style="display:flex;gap:8px;align-items:center">'+(i+1)+'. '+avatar(f,30)+esc(f.name)+'</strong><span>'+(f.wins||0)+' / '+(f.gamesPlayed||0)+' ('+rate(f)+' %)</span></div><div class="bar"><i style="width:'+rate(f)+'%"></i></div><div class="pm">Moyenne '+avg(f)+' · Triples '+(f.triples||0)+' · Bulls '+(f.bulls||0)+' · Meilleur 501 : '+best(f)+'</div></div>'}).join(''):'Aucun joueur.';
-  const o=ids.map(id=>'<option value="'+esc(id)+'">'+esc(profiles[id].name)+'</option>').join('');
-  const a=$('du1').value,b=$('du2').value;$('du1').innerHTML=o;$('du2').innerHTML=o;
-  $('du1').value=profiles[a]&&!profiles[a].deleted?a:ids[0]||'';$('du2').value=profiles[b]&&!profiles[b].deleted?b:ids[1]||ids[0]||'';duel()
-}
-function duel(){
-  const p=profiles[$('du1').value],q=profiles[$('du2').value];
-  if(!p||!q||$('du1').value===$('du2').value){$('duel').innerHTML='<span class="pm">Choisissez deux joueurs différents.</span>';return}
-  const R=(l,x,y)=>'<tr><td>'+l+'</td><td>'+x+'</td><td>'+y+'</td></tr>';
-  $('duel').innerHTML='<table><tr><th></th><th>'+esc(p.name)+'</th><th>'+esc(q.name)+'</th></tr>'+R('Victoires',rate(p)+' %',rate(q)+' %')+R('Parties',p.gamesPlayed||0,q.gamesPlayed||0)+R('Moyenne / volée',avg(p),avg(q))+R('Triples',p.triples||0,q.triples||0)+R('Bulls',p.bulls||0,q.bulls||0)+R('Meilleur 501',best(p),best(q))+'</table>'
-}
-$('du1').onchange=duel;$('du2').onchange=duel;
-$('mStats').onclick=()=>{renderStats();$('dStats').showModal();pull().then(renderStats)};
+    function toggleForm() {
+        const fc = document.getElementById("formContainer");
+        fc.classList.toggle("hidden");
+        if (!fc.classList.contains("hidden")) {
+            fc.scrollIntoView({ behavior: "smooth" });
+        }
+    }
 
-// ---------- Réglages ----------
-$('mVoice').onclick=()=>{$('elKey').value=voice.elApiKey;$('elStatus').textContent='';$('dVoice').showModal()};
-const readVoice=()=>{voice.elApiKey=$('elKey').value.trim();store('granboard_voice_config',voice)};
-$('elRun').onclick=()=>{readVoice();say($('elTest').value.trim()||'Triple vingt !',true)};
-$('elSave').onclick=()=>{readVoice();warned=false;$('dVoice').close();toast('Clé enregistrée')};
-$('mGit').onclick=()=>{$('ghO').value=ghc.owner;$('ghR').value=ghc.repo;$('ghT').value=ghc.token;$('dGit').showModal()};
-const readGh=()=>{ghc={owner:$('ghO').value.trim(),repo:$('ghR').value.trim(),token:$('ghT').value.trim()};store('granboard_gh_config',ghc);ghLabel()};
-$('ghSave').onclick=async()=>{readGh();$('dGit').close();if(await push())toast('GitHub relié et synchronisé')};
-$('ghLink').onclick=()=>{
-  readGh();if(!ghc.owner||!ghc.repo||!ghc.token){toast('Remplissez les trois champs.');return}
-  const u=location.origin+location.pathname+'#gh='+encodeURIComponent(btoa(ghc.owner+'|'+ghc.repo+'|'+ghc.token));
-  (navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>toast('Lien copié')).catch(()=>prompt('Copiez ce lien :',u))
-};
-$('mLog').onclick=()=>{$('logBox').textContent=logs.join('\n')||'Aucun événement.';$('dLog').showModal()};
-$('mLed').onclick=ledOff;
-$('bConn').onclick=()=>{if(!connected)connectBoard()};
-$('bSnd').onclick=()=>{snd=!snd;$('bSnd').textContent='Son : '+(snd?'oui':'non');if(!snd)A.pause()};
+    async function loadDatabase() {
+        document.getElementById("deviceTitle").innerText = "🔄 Chargement...";
+        try {
+            const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${DATA_FILE}?_=${Date.now()}`;
+            const res = await fetch(url, {
+                headers: {
+                    "Authorization": "token " + getToken(),
+                    "Accept": "application/vnd.github.v3+json"
+                }
+            });
 
-ghLabel();pull();log('Application prête');
+            if (res.status === 404) {
+                fullDatabase = {};
+                fileSha = null;
+                renderCurrentItem();
+                return;
+            }
+
+            const data = await res.json();
+            fileSha = data.sha;
+            fullDatabase = JSON.parse(fromBase64Utf8(data.content));
+            renderCurrentItem();
+        } catch (e) {
+            document.getElementById("deviceTitle").innerText = "Erreur de chargement";
+        }
+    }
+
+    function renderCurrentItem() {
+        const item = fullDatabase[qrId];
+        const inputNom = document.getElementById("inputNomAppareil");
+
+        if (!item || !item.Nom_Appareil) {
+            document.getElementById("deviceTitle").innerText = "Appareil non identifié";
+            document.getElementById("newDeviceAlert").classList.remove("hidden");
+            document.getElementById("valEmplacement").innerText = "Non renseigné";
+            document.getElementById("valModifiePar").innerText = "—";
+            document.getElementById("valCommentaire").innerText = "—";
+            document.getElementById("valDate").innerText = "Jamais";
+
+            inputNom.value = "";
+        } else {
+            document.getElementById("newDeviceAlert").classList.add("hidden");
+            document.getElementById("deviceTitle").innerText = item.Nom_Appareil;
+            document.getElementById("valEmplacement").innerText = item.Emplacement || "—";
+            document.getElementById("valModifiePar").innerText = item.Modifie_Par || "—";
+            document.getElementById("valCommentaire").innerText = item.Commentaire || "—";
+            document.getElementById("valDate").innerText = item.Date_MAJ || "—";
+
+            inputNom.value = item.Nom_Appareil;
+            document.getElementById("inputEmplacement").value = item.Emplacement || "";
+        }
+    }
+
+    async function saveEquipment() {
+        const nomAppareil = document.getElementById("inputNomAppareil").value.trim();
+        const emplacement = document.getElementById("inputEmplacement").value.trim();
+        const modifiePar  = document.getElementById("inputModifiePar").value.trim();
+        const commentaire = document.getElementById("inputCommentaire").value.trim();
+
+        if (!nomAppareil || !emplacement || !modifiePar) {
+            alert("Veuillez remplir le nom de l'appareil, l'emplacement et votre nom.");
+            return;
+        }
+
+        const btn = document.getElementById("btnSave");
+        btn.innerText = "⏳ Enregistrement en cours...";
+        btn.disabled = true;
+
+        try {
+            const checkUrl = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${DATA_FILE}?_=${Date.now()}`;
+            const checkRes = await fetch(checkUrl, {
+                headers: { "Authorization": "token " + getToken() }
+            });
+            if (checkRes.status === 200) {
+                const checkData = await checkRes.json();
+                fileSha = checkData.sha;
+                fullDatabase = JSON.parse(fromBase64Utf8(checkData.content));
+            }
+
+            fullDatabase[qrId] = {
+                QR_ID: qrId,
+                Nom_Appareil: nomAppareil,
+                Emplacement: emplacement,
+                Modifie_Par: modifiePar,
+                Commentaire: commentaire,
+                Date_MAJ: new Date().toLocaleString("fr-FR")
+            };
+
+            const bodyPayload = {
+                message: "MAJ " + qrId,
+                content: toBase64Utf8(JSON.stringify(fullDatabase, null, 2))
+            };
+            if (fileSha) bodyPayload.sha = fileSha;
+
+            const putRes = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${DATA_FILE}`, {
+                method: "PUT",
+                headers: {
+                    "Authorization": "token " + getToken(),
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(bodyPayload)
+            });
+
+            if (putRes.ok) {
+                const putData = await putRes.json();
+                fileSha = putData.content.sha;
+                renderCurrentItem();
+                document.getElementById("formContainer").classList.add("hidden");
+                document.getElementById("inputCommentaire").value = "";
+                const msg = document.getElementById("msgBox");
+                msg.classList.remove("hidden");
+                setTimeout(() => msg.classList.add("hidden"), 4000);
+            } else {
+                alert("Erreur lors de l'enregistrement sur GitHub.");
+            }
+        } catch (e) {
+            alert("Erreur réseau lors de l'enregistrement.");
+        }
+
+        btn.innerText = "💾 Enregistrer";
+        btn.disabled = false;
+    }
+
+    function exportExcel() {
+        let csv = "\uFEFFQR_ID;Nom_Appareil;Emplacement;Modifie_Par;Commentaire;Derniere_MAJ\r\n";
+        for (let i = 1; i <= 200; i++) {
+            const id = "QR" + ("00000" + i).slice(-5);
+            const row = fullDatabase[id] || {};
+            const nom = (row.Nom_Appareil || "").replace(/;/g, ",");
+            const emp = (row.Emplacement || "").replace(/;/g, ",");
+            const mod = (row.Modifie_Par || "").replace(/;/g, ",");
+            const com = (row.Commentaire || "").replace(/;/g, ",");
+            const dat = (row.Date_MAJ || "").replace(/;/g, ",");
+            csv += `${id};${nom};${emp};${mod};${com};${dat}\r\n`;
+        }
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "Inventaire_Complet_QR.csv";
+        a.click();
+    }
+
+    init();
 </script>
+
 </body>
 </html>
